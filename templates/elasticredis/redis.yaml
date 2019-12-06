@@ -22,7 +22,7 @@ Metadata:
       - RDS
       - elasticcache
       - redis
-    Name: elasticredis
+    Name: redis
     DisplayName: Amazon ElasticRedis
     LongDescription: Amazon ElastiCache is a web service that makes it easy to set
       up, manage, and scale distributed in-memory cache environments in the cloud.
