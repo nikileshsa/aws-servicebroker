@@ -20,10 +20,10 @@ Metadata:
     Tags:
       - AWS
       - RDS
-      - elasticredis
+      - elasticcache
       - redis
     Name: elasticredis
-    DisplayName: Amazon ElastiRedis
+    DisplayName: Amazon ElasticRedis
     LongDescription: Amazon ElastiCache is a web service that makes it easy to set
       up, manage, and scale distributed in-memory cache environments in the cloud.
       It provides a high performance, resizeable, and cost-effective in-memory cache,
@@ -36,7 +36,7 @@ Metadata:
       production:
         DisplayName: Production
         Description: Configuration designed for production deployments
-        LongDescription: Creates an Amazon ElastiCache for memcached, optimised for
+        LongDescription: Creates an Amazon ElastiCache for redis, optimised for
           production use
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues:
@@ -51,7 +51,7 @@ Metadata:
       custom:
         DisplayName: Custom
         Description: Custom Configuration for Advanced deployments
-        LongDescription: Creates an Amazon ElastiCache for memcached with custom configuration
+        LongDescription: Creates an Amazon ElastiCache for redis with custom configuration
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues: {}
   'AWS::CloudFormation::Interface':
