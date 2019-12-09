@@ -6,4 +6,8 @@ metadata:
 spec:
   clusterServiceClassExternalName: elasticredis
   clusterServicePlanExternalName: production
+  parameters:
+    ParentVPCStack: vpc-red
+    ParentClientStack: client-sg
+
   
