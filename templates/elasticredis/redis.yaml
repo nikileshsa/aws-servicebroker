@@ -72,8 +72,6 @@ Metadata:
           - CacheNodeType
           - TransitEncryption
           - AuthToken
-          - SnapshotRetentionLimit
-          - SnapshotName
           - SubDomainName
 Parameters:
   ParentVPCStack:
@@ -123,16 +121,6 @@ Parameters:
     Type: 'String'
     Default: ''
     MaxLength: 128
-  SnapshotRetentionLimit:
-    Description: 'The number of days for which ElastiCache retains automatic snapshots before deleting them (set to 0 to disable backups).'
-    Type: Number
-    Default: 35
-    MinValue: 0
-    MaxValue: 35
-  SnapshotName:
-    Description: 'Optional name of a snapshot from which you want to restore (leave blank to create an empty cache).'
-    Type: 'String'
-    Default: ''
   SubDomainName:
     Description: 'Name that is used to create the DNS entry §{SubDomainName}.§{HostedZoneName} (required when ParentZoneStack is set, otherwise not considered)'
     Type: String
@@ -153,7 +141,6 @@ Conditions:
   HasSSHBastionSecurityGroup: !Not [!Equals [!Ref ParentSSHBastionStack, '']]
   HasAlertTopic: !Not [!Equals [!Ref ParentAlertStack, '']]
   HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
-  HasSnapshotName: !Not [!Equals [!Ref SnapshotName, '']]
 Resources:
   RecordSet:
     Condition: HasZone
@@ -226,9 +213,6 @@ Resources:
       PreferredMaintenanceWindow: 'sat:07:00-sat:08:00'
       SecurityGroupIds:
         - !Ref SecurityGroup
-      SnapshotName: !If [HasSnapshotName, !Ref SnapshotName, !Ref 'AWS::NoValue']
-      SnapshotRetentionLimit: !Ref SnapshotRetentionLimit
-      SnapshotWindow: '00:00-03:00'
       TransitEncryptionEnabled: !Ref TransitEncryption
   Node1CPUUtilizationTooHighAlarm:
     Condition: HasAlertTopic
