@@ -206,8 +206,8 @@ Resources:
       SourceSecurityGroupId:
         'Fn::ImportValue': !Sub '${ParentSSHBastionStack}-SecurityGroup'
   ReplicationGroup:
-    DeletionPolicy: Snapshot
-    UpdateReplacePolicy: Snapshot
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
     Type: AWS::ElastiCache::ReplicationGroup
     Properties:
       ReplicationGroupDescription: !Ref 'AWS::StackName'
