@@ -59,7 +59,7 @@ Metadata:
           default: 'Parent Stacks'
         Parameters:
           - VpcID
-          - SecurityGroup
+          - SecurityGroupId
           - ParentKmsKeyStack
           - ParentZoneStack
           - ParentSSHBastionStack
@@ -77,7 +77,7 @@ Parameters:
     Description: 'VPC ID of the for the redis deployment'
     Type: String
     Default: 'vpc-0f59e1f5e6fd508d5'
-  SecurityGroup:
+  SecurityGroupId:
     Description: 'Security Group id'
     Type: String
     Default: 'sg-02a926ebfce0eb3b0'
