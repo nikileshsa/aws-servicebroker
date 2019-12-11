@@ -1,13 +1,13 @@
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceInstance
 metadata:
-  name: elasticredis-instance-custom-vpc 
+  name: elasticredis-instance-custom 
   namespace: test-redis
 spec:
   clusterServiceClassExternalName: elasticredis
   clusterServicePlanExternalName: custom 
   parameters:
-    ParentVPCStack: vpc-0f59e1f5e6fd508d5
-    ParentClientStack: sg-00778b3cd4bb7be50
+    ParentVPCStack: vpc-redis 
+    ParentClientStack: client-sg-1 
 
   
