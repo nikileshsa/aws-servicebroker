@@ -167,7 +167,7 @@ Resources:
     Type: 'AWS::ElastiCache::SubnetGroup'
     Properties:
       Description: !Ref 'AWS::StackName'
-      SubnetIds: 'subnet-00c4b46f45b847fd2,subnet-06aa0a6732bfc2dc7,subnet-038801806dfc1cb67'
+      SubnetIds: ['subnet-00c4b46f45b847fd2,subnet-06aa0a6732bfc2dc7,subnet-038801806dfc1cb67']
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
