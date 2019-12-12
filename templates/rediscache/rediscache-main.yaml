@@ -134,7 +134,7 @@ Resources:
   ElastiCacheCluster:
     Type: AWS::ElastiCache::CacheCluster
     Properties:
-      AutoMinorVersionUpgrade: 'Yes'
+      AutoMinorVersionUpgrade: 'true'
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
       Engine: redis
