@@ -139,7 +139,7 @@ Resources:
       CacheSubnetGroupName: !Ref SubnetGroup
       Engine: redis
       EngineVersion: '5.0.0'
-      NumCacheNodes: 2
+      NumCacheNodes: 1
       Port: !Ref RedisPort
       VpcSecurityGroupIds:
       - !Ref SecurityGroup
