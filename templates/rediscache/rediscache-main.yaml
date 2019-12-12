@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  An example template that stands up an ElasticCache Replication Group Multi-AZ
+  A Dragonfly  ElasticRedis template that stands up an ElasticCache Replication Group Multi-AZ
   in a particular VPC specifying then a Subnet Group and a Security Group, VpcId
   is not directly referenced by the Replication Group resource, and is instead
   inferred by the Security Group and Subnet Group.
@@ -13,10 +13,9 @@ Metadata:
       - rediscache
       - redis
     Name: rediscache
-    DisplayName: Amazon ElasticRedis
-    LongDescription: Amazon ElastiCache is a web service that makes it easy to set
-      up, manage, and scale distributed in-memory cache environments in the cloud.
-      It provides a high performance, resizeable, and cost-effective in-memory cache,
+    DisplayName: Dragonfly ElasticRedis
+    LongDescription: Dragonfly  ElasticRedis is a web service that leverages AWS ElasticCache to set
+      up, manage, and scale distributed in-memory cache.It provides a high performance, resizeable, and cost-effective in-memory cache,
       while removing the complexity associated with deploying and managing a distributed
       cache environment.
     DocumentationUrl: https://aws.amazon.com/documentation/elasticache/

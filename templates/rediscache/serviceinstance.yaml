@@ -1,0 +1,14 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: rediscache-instance-custom
+  namespace: test-redis
+spec:
+  clusterServiceClassExternalName: rediscache
+  clusterServicePlanExternalName: custom 
+  parameters:
+    VpcId: vpc-0f59e1f5e6fd508d5 
+    SubnetA: subnet-0e4181f08ff976280
+    SubnetB: subnet-0d09eee389164464e 
+
+  
