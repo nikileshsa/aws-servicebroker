@@ -180,25 +180,13 @@ Resources:
       NumNodeGroups: 2
 
 Outputs:
-  RGEndpoint:
-    Description: The primary endpoint location
-    Value: !Join 
-      - ''
-      - - 'redis://'
-        - !GetAtt 
-          - ReplicationGroup
-          - PrimaryEndPoint.Address
-        - ':'
-        - !GetAtt 
-          - ReplicationGroup
-          - PrimaryEndPoint.Port
-  PrimaryEndPointAddress:
+  ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
-    Value: !GetAtt 'ReplicationGroup.PrimaryEndPoint.Address'
+    Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Address'
     Export:
       Name: !Sub '${AWS::StackName}-PrimaryEndPointAddress'
-  PrimaryEndPointPort:
+  ConfigurationEndPointPort:
     Description: 'The port that the primary read-write cache engine is listening on.'
-    Value: !GetAtt 'ReplicationGroup.PrimaryEndPoint.Port'
+    Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
     Export:
-      Name: !Sub '${AWS::StackName}-PrimaryEndPointPort'
+      Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
