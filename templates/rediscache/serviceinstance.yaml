@@ -5,7 +5,7 @@ metadata:
   namespace: test-redis
 spec:
   clusterServiceClassExternalName: rediscache
-  clusterServicePlanExternalName: custom 
+  clusterServicePlanExternalName: production 
   parameters:
     VpcId: vpc-0f59e1f5e6fd508d5 
     SubnetA: subnet-0e4181f08ff976280
