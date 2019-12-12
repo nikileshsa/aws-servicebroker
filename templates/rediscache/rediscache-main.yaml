@@ -63,7 +63,7 @@ Parameters:
     AllowedValues:
       - 'true'
       - 'false'
-  NumCacheClusters:
+  ReplicasPerNodeGroup:
     Description: >-
       The number of cache clusters for this replication group. If MultiAZ
       support is enabled, you must specify a value greater than 1.
@@ -155,7 +155,7 @@ Resources:
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
       Engine: redis
-      NumCacheClusters: !Ref NumCacheClusters
+      ReplicasPerNodeGroup: !Ref ReplicasPerNodeGroup
       Port: !Ref RedisPort
       PreferredMaintenanceWindow: !Ref PreferredMaintenanceWindow
       ReplicationGroupDescription: !Ref ReplicationGroupDescription
@@ -165,6 +165,8 @@ Resources:
           - GroupId
       SnapshotRetentionLimit: !Ref SnapshotRetentionLimit
       SnapshotWindow: !Ref SnapshotWindow
+      NumNodeGroups: 2
+
 Outputs:
   RGEndpoint:
     Description: The primary endpoint location
