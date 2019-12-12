@@ -131,6 +131,18 @@ Parameters:
       In this Dragonfly deployment we only accept 2 subnets
     Type: 'AWS::EC2::Subnet::Id'
 Resources:
+  ElastiCacheCluster:
+    Type: AWS::ElastiCache::CacheCluster
+    Properties:
+      AutoMinorVersionUpgrade: 'Yes'
+      CacheNodeType: !Ref CacheNodeType
+      CacheSubnetGroupName: !Ref SubnetGroup
+      Engine: redis
+      EngineVersion: '5.0.0'
+      NumCacheNodes: 2
+      Port: !Ref RedisPort
+      VpcSecurityGroupIds:
+      - !Ref SecurityGroup
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -180,3 +192,13 @@ Outputs:
         - !GetAtt 
           - ReplicationGroup
           - PrimaryEndPoint.Port
+  PrimaryEndPointAddress:
+    Description: 'The DNS address of the primary read-write cache node.'
+    Value: !GetAtt 'ReplicationGroup.PrimaryEndPoint.Address'
+    Export:
+      Name: !Sub '${AWS::StackName}-PrimaryEndPointAddress'
+  PrimaryEndPointPort:
+    Description: 'The port that the primary read-write cache engine is listening on.'
+    Value: !GetAtt 'ReplicationGroup.PrimaryEndPoint.Port'
+    Export:
+      Name: !Sub '${AWS::StackName}-PrimaryEndPointPort'
