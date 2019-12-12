@@ -82,7 +82,7 @@ Parameters:
   ReplicationGroupDescription:
     Description: The description of the replication group.
     Type: String
-    Default: Example replication group
+    Default: Dragonfly deployment replication group
   VpcId:
     Description: The VPC to create this ReplicationGroup under
     Type: 'AWS::EC2::VPC::Id'
@@ -123,18 +123,18 @@ Parameters:
   SubnetA:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
-      In this example we only accept 2 subnets
+      In this Dragonfly deployment we only accept 2 subnets
     Type: 'AWS::EC2::Subnet::Id'
   SubnetB:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
-      In this example we only accept 2 subnets
+      In this Dragonfly deployment we only accept 2 subnets
     Type: 'AWS::EC2::Subnet::Id'
 Resources:
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: Security Group for Example Replication Group
+      GroupDescription: Security Group for Dragonfly deployment Replication Group
       SecurityGroupIngress:
         - CidrIp: !Ref CidrIp
           FromPort: !Ref RedisPort
@@ -144,7 +144,7 @@ Resources:
   SubnetGroup:
     Type: 'AWS::ElastiCache::SubnetGroup'
     Properties:
-      Description: Subnet Group for Example Replication Group
+      Description: Subnet Group for Dragonfly deployment Replication Group
       SubnetIds:
         - !Ref SubnetA
         - !Ref SubnetB
