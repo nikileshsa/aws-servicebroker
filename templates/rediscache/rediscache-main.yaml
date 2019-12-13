@@ -180,6 +180,7 @@ Resources:
       NumNodeGroups: 2
       TransitEncryptionEnable: true
       AtRestEncryptionEnabled: true
+      AuthToken: 'Redis123'
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
