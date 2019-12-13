@@ -178,7 +178,7 @@ Resources:
       SnapshotRetentionLimit: !Ref SnapshotRetentionLimit
       SnapshotWindow: !Ref SnapshotWindow
       NumNodeGroups: 2
-      TransitEncryptionEnable: true
+      TransitEncryptionEnabled: true
       AtRestEncryptionEnabled: true
       AuthToken: 'Redis123'
 Outputs:
