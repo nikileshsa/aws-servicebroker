@@ -131,6 +131,84 @@ Parameters:
       In this Dragonfly deployment we only accept 2 subnets
     Type: 'AWS::EC2::Subnet::Id'
 Resources:
+  PasswordGeneratorLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}-PasswordGenerator
+      RetentionInDays: 1
+  PasswordGeneratorRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      Path: /
+      Policies:
+        -
+          PolicyName: Policy
+          PolicyDocument:
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt PasswordGeneratorLogGroup.Arn
+              -
+                Effect: Allow
+                Action:
+                  - ssm:DeleteParameter
+                  - ssm:PutParameter
+                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/*
+  PasswordGenerator:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: !Sub |
+          import boto3
+          import cfnresponse
+          import secrets
+          import string
+
+          alphabet = string.ascii_letters + string.digits
+          ssm = boto3.client('ssm')
+
+          def handler(event, context):
+            try:
+              # Generate an alphanumeric password of the requested length (default: 12)
+              length = int(event['ResourceProperties'].get('Length', 20))
+              password = ''.join(secrets.choice(alphabet) for _ in range(length))
+
+              # Use the stack name and logical resource ID in the parameter name to ensure uniqueness
+              parameter_name = '/${AWS::StackName}/' + event['LogicalResourceId']
+              physical_resource_id = parameter_name
+
+              response_data = {'ParameterName': parameter_name, 'Password': password}
+
+              if event['RequestType'] == 'Delete':
+                try:
+                  ssm.delete_parameter(Name=parameter_name)
+                except ssm.exceptions.ParameterNotFound:
+                  pass
+              else:
+                ssm.put_parameter(Name=parameter_name, Value=password, Type='SecureString', Overwrite=True)
+
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, response_data, physical_resource_id)
+            except Exception as e:
+              print(e)
+              cfnresponse.send(event, context, cfnresponse.FAILED, {})
+      Handler: index.handler
+      Role: !GetAtt PasswordGeneratorRole.Arn
+      Runtime: python3.6
+  RandomPassword:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt PasswordGenerator.Arn
   ElastiCacheCluster:
     Type: AWS::ElastiCache::CacheCluster
     Properties:
@@ -180,7 +258,7 @@ Resources:
       NumNodeGroups: 2
       TransitEncryptionEnabled: true
       AtRestEncryptionEnabled: true
-      AuthToken: 'Test12341234123412341234'
+      AuthToken: !Ref RandomPassword
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
@@ -192,3 +270,7 @@ Outputs:
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
+  RandomPassword: # This exposes the password in cleartext; don't do this at home :)
+    Value: !GetAtt RandomPassword.Password
+  RandomPasswordParameterName:
+    Value: !GetAtt RandomPassword.ParameterName
