@@ -180,7 +180,7 @@ Resources:
       NumNodeGroups: 2
       TransitEncryptionEnabled: true
       AtRestEncryptionEnabled: true
-      AuthToken: 'test12341234123412341234'
+      AuthToken: 'Test12341234123412341234'
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
