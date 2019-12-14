@@ -131,6 +131,11 @@ Parameters:
       In this Dragonfly deployment we only accept 2 subnets
     Type: 'AWS::EC2::Subnet::Id'
 Resources:
+  PasswordGeneratorLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${AWS::StackName}-PasswordGenerator
+      RetentionInDays: 1
   PasswordGeneratorRole:
     Type: AWS::IAM::Role
     Properties:
@@ -148,6 +153,12 @@ Resources:
           PolicyName: Policy
           PolicyDocument:
             Statement:
+              -
+                Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt PasswordGeneratorLogGroup.Arn
               -
                 Effect: Allow
                 Action:
