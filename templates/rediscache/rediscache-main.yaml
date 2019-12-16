@@ -156,15 +156,16 @@ Resources:
               -
                 Effect: Allow
                 Action:
+                  - logs:CreateLogGroup
                   - logs:CreateLogStream
                   - logs:PutLogEvents
-                Resource: !GetAtt PasswordGeneratorLogGroup.Arn
+                Resource: '*'
               -
                 Effect: Allow
                 Action:
                   - ssm:DeleteParameter
                   - ssm:PutParameter
-                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/*
+                Resource: "*"
   PasswordGenerator:
     Type: AWS::Lambda::Function
     Properties:
@@ -203,24 +204,14 @@ Resources:
               print(e)
               cfnresponse.send(event, context, cfnresponse.FAILED, {})
       Handler: index.handler
-      Role: !GetAtt PasswordGeneratorRole.Arn
+      Role: 
+        - !GetAtt PasswordGeneratorRole.Arn
+        - !GetAtt Arn
       Runtime: python3.6
   RandomPassword:
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: !GetAtt PasswordGenerator.Arn
-  ElastiCacheCluster:
-    Type: AWS::ElastiCache::CacheCluster
-    Properties:
-      AutoMinorVersionUpgrade: 'true'
-      CacheNodeType: !Ref CacheNodeType
-      CacheSubnetGroupName: !Ref SubnetGroup
-      Engine: redis
-      EngineVersion: '5.0.0'
-      NumCacheNodes: 1
-      Port: !Ref RedisPort
-      VpcSecurityGroupIds:
-      - !Ref SecurityGroup
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
