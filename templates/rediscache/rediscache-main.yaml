@@ -258,7 +258,7 @@ Resources:
       NumNodeGroups: 2
       TransitEncryptionEnabled: true
       AtRestEncryptionEnabled: true
-      AuthToken: !Ref RandomPassword.ParameterName
+      AuthToken: !GetAtt Test1234567891012345678910
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
