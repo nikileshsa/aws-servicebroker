@@ -206,7 +206,6 @@ Resources:
       Handler: index.handler
       Role: 
         - !GetAtt PasswordGeneratorRole.Arn
-        - !GetAtt Arn
       Runtime: python3.6
   RandomPassword:
     Type: AWS::CloudFormation::CustomResource
