@@ -1,7 +1,7 @@
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceInstance
 metadata:
-  name: rediscache-instance-cluster-8
+  name: rediscache-instance-cluster-9
   namespace: test-redis
 spec:
   clusterServiceClassExternalName: rediscache
