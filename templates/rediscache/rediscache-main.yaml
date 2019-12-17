@@ -136,6 +136,32 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${AWS::StackName}-PasswordGenerator
       RetentionInDays: 1
+  AWSSBInjectedGetAzsRole:
+    Condition: AutoAzs
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: /
+      Policies:
+      - PolicyName: cfn_utility_get_cidrs
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - ec2:DescribeAvailabilityZones
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: '*'
   PasswordGeneratorRole:
     Type: AWS::IAM::Role
     Properties:
@@ -203,7 +229,7 @@ Resources:
               print(e)
               cfnresponse.send(event, context, cfnresponse.FAILED, {})
       Handler: index.handler
-      Role: !GetAtt PasswordGeneratorRole.Arn
+      Role: !GetAtt AWSSBInjectedGetAzsRole.Arn
       Runtime: python3.6
   RandomPassword:
     Type: AWS::CloudFormation::CustomResource
