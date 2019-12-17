@@ -228,7 +228,7 @@ Resources:
               print(e)
               cfnresponse.send(event, context, cfnresponse.FAILED, {})
       Handler: index.handler
-      Role: !GetAtt AWSSBInjectedGetAzsRole.Arn
+      Role: !GetAtt PasswordGeneratorRole.Arn
       Runtime: python3.6
   RandomPassword:
     Type: AWS::CloudFormation::CustomResource
