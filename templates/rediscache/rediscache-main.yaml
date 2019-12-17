@@ -234,18 +234,6 @@ Resources:
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: !GetAtt PasswordGenerator.Arn
-  ElastiCacheCluster:
-    Type: AWS::ElastiCache::CacheCluster
-    Properties:
-      AutoMinorVersionUpgrade: 'true'
-      CacheNodeType: !Ref CacheNodeType
-      CacheSubnetGroupName: !Ref SubnetGroup
-      Engine: redis
-      EngineVersion: '5.0.0'
-      NumCacheNodes: 1
-      Port: !Ref RedisPort
-      VpcSecurityGroupIds:
-      - !Ref SecurityGroup
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
