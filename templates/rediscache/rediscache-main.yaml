@@ -137,7 +137,6 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${AWS::StackName}-PasswordGenerator
       RetentionInDays: 1
   AWSSBInjectedGetAzsRole:
-    Condition: AutoAzs
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
