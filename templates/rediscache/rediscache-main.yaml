@@ -271,8 +271,8 @@ Resources:
       SnapshotRetentionLimit: !Ref SnapshotRetentionLimit
       SnapshotWindow: !Ref SnapshotWindow
       NumNodeGroups: 2
-      TransitEncryptionEnabled: true
-      AtRestEncryptionEnabled: true
+      TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
+      AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
