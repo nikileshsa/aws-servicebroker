@@ -123,13 +123,19 @@ Parameters:
   SubnetA:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
-      In this Dragonfly deployment we only accept 2 subnets
+      In this Dragonfly deployment we only accept 2 subnets for now
     Type: 'AWS::EC2::Subnet::Id'
   SubnetB:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
-      In this Dragonfly deployment we only accept 2 subnets
+      In this Dragonfly deployment we only accept 2 subnets for now
     Type: 'AWS::EC2::Subnet::Id'
+  TransitEncryptionEnabled:
+    Type: String
+    Default: 'true'
+  AtRestEncryptionEnabled:  
+    Type: String
+    Default: 'true'
 Resources:
   PasswordGeneratorLogGroup:
     Type: AWS::Logs::LogGroup
