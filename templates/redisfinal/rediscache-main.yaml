@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  This is a Dragonfly  ElasticRedis template which creates a Replication Group
-  in a particular VPC specifying and referencing specific Subnet and Security Groups.
+  A Cloudformation template to create Redis cluster using AWS managed ElasticCache. The template creates a redis deployment in cluster mode 
+  and references a VPCID and two subnets for multizone deployment.
 Metadata:
   AWS::ServiceBroker::Specification:
     Version: 1.0
@@ -11,12 +11,12 @@ Metadata:
       - rediscache
       - redis
     Name: rediscache
-    DisplayName: Dragonfly ElasticRedis
-    LongDescription: Dragonfly  ElasticRedis is a web service that leverages AWS ElasticCache to set
-      up, manage, and scale distributed in-memory cache.It provides a high performance, resizeable, and cost-effective in-memory cache,
-      while removing the complexity associated with deploying and managing a distributed
-      cache environment.
-    DocumentationUrl: https://aws.amazon.com/documentation/elasticache/
+    DisplayName: ElasticCacheRedis
+    LongDescription: >-
+      Amazon ElastiCache is a web service that makes it easy to set up, manage, and scale a distributed in-memory data store or cache environment in the cloud. 
+      It provides a high-performance, scalable, and cost-effective caching solution. At the same time, it helps remove the complexity associated with deploying 
+      and managing a distributed cache environment. This template deploys an elasticcache redis engine in cluster mode by default
+    DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
     ProviderDisplayName: Amazon Web Services
     ServicePlans:
       production:
@@ -54,13 +54,19 @@ Parameters:
     Description: >-
       Indicates whether Multi-AZ is enabled. When Multi-AZ is enabled, a
       read-only replica is automatically promoted to a read-write primary
-      cluster if the existing primary cluster fails. If you specify true, you
-      must specify a value greater than 1 for the NumCacheClusters property.
+      cluster if the existing primary cluster fails. This should be set to true for cluster mode enabled redis 
+      deployment
     Type: String
     Default: 'true'
     AllowedValues:
       - 'true'
       - 'false'
+  NumNodeGroups:
+    Description: >-
+      Specifies the number of node groups (shards) for this Redis (cluster mode enabled) replication group. 
+      For Redis (cluster mode disabled) either omit this parameter or set it to 1. The current default in this cloudformation template is set to 2 to enable cluster mode by default
+    Type: Integer
+    Default: 2   
   ReplicasPerNodeGroup:
     Description: >-
       The number of cache clusters for this replication group. If MultiAZ
@@ -85,7 +91,7 @@ Parameters:
     Description: The VPC to create this ReplicationGroup under
     Type: 'AWS::EC2::VPC::Id'
   CidrIp:
-    Description: The CIDR you want to access to the Replication Group
+    Description: The CIDR you want to access the Replication Group
     Type: String
     Default: 0.0.0.0/0
     AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
@@ -95,7 +101,9 @@ Parameters:
   SnapshotRetentionLimit:
     Description: >-
       The number of days that ElastiCache retains automatic snapshots before
-      deleting them.
+      deleting them. For an automatic snapshot, the number of days for which 
+      ElastiCache retains the snapshot before deleting it. If the value of SnapshotRetentionLimit is set to zero (0), 
+      backups are turned off.
     Type: Number
     Default: '7'
   SnapshotWindow:
@@ -121,12 +129,12 @@ Parameters:
   SubnetA:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
-      In this Dragonfly deployment we only accept 2 subnets for now
+      In this deployment we only accept 2 subnets for now. This can be extended to support multiple subnets
     Type: 'AWS::EC2::Subnet::Id'
   SubnetB:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
-      In this Dragonfly deployment we only accept 2 subnets for now
+      In this deployment we only accept 2 subnets for now. This can be extended to support multiple subnets
     Type: 'AWS::EC2::Subnet::Id'
   TransitEncryptionEnabled:
     Type: String
@@ -134,37 +142,18 @@ Parameters:
   AtRestEncryptionEnabled:  
     Type: String
     Default: 'true'
+  AuthToken:
+    Type: String
+    Description: >-
+      Auth Token is a reserved parameter. Auth Token is the password used by the clients to access the redis server when authtoken is specified. 
+      Passwords must be only printable ASCII characters. Must be at least 16 characters and no more than 128 characters in length. For more password constraints information, 
+      see http://redis.io/commands/AUTH.
 Resources:
   PasswordGeneratorLogGroup:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub /aws/lambda/${AWS::StackName}-PasswordGenerator
       RetentionInDays: 1
-  AWSSBInjectedGetAzsRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - lambda.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: /
-      Policies:
-      - PolicyName: cfn_utility_get_cidrs
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - ec2:DescribeAvailabilityZones
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            Resource: '*'
   PasswordGeneratorRole:
     Type: AWS::IAM::Role
     Properties:
@@ -209,11 +198,8 @@ Resources:
 
           def handler(event, context):
             try:
-              # Generate an alphanumeric password of the requested length (default: 12)
               length = int(event['ResourceProperties'].get('Length', 20))
               password = ''.join(secrets.choice(alphabet) for _ in range(length))
-
-              # Use the stack name and logical resource ID in the parameter name to ensure uniqueness
               parameter_name = '/${AWS::StackName}/' + event['LogicalResourceId']
               physical_resource_id = parameter_name
 
@@ -247,7 +233,7 @@ Resources:
   SubnetGroup:
     Type: 'AWS::ElastiCache::SubnetGroup'
     Properties:
-      Description: Subnet Group for Dragonfly deployment Replication Group
+      Description: Subnet Group for the current Replication Group
       SubnetIds:
         - !Ref SubnetA
         - !Ref SubnetB
@@ -268,17 +254,18 @@ Resources:
           - GroupId
       SnapshotRetentionLimit: !Ref SnapshotRetentionLimit
       SnapshotWindow: !Ref SnapshotWindow
-      NumNodeGroups: 2
+      NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
+      AuthToken: !Ref AuthToken      
 Outputs:
   ConfigurationEndPointAddress:
-    Description: 'The DNS address of the primary read-write cache node.'
+    Description: 'The redis endpoint'
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Address'
     Export:
-      Name: !Sub '${AWS::StackName}-PrimaryEndPointAddress'
+      Name: !Sub '${AWS::StackName}-ConfigurationEndPointAddress'
   ConfigurationEndPointPort:
-    Description: 'The port that the primary read-write cache engine is listening on.'
+    Description: 'The redis port'
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'

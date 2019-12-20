@@ -5,4 +5,4 @@ metadata:
   namespace: test-redis
 spec:
   instanceRef:
-    name: rediscache-instance-custom 
+    name: elasticcache-redis
