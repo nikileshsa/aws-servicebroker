@@ -79,7 +79,7 @@ Parameters:
     Description: >-
       The port number on which each member of the replication group accepts
       connections.
-    Type: Number
+    Type: String
     Default: '6379'
     MinValue: '1'
     MaxValue: '65535'
