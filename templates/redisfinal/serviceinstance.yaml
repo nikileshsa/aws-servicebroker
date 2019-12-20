@@ -10,6 +10,6 @@ spec:
     VpcId: vpc-0f59e1f5e6fd508d5 
     SubnetA: subnet-0e4181f08ff976280
     SubnetB: subnet-0d09eee389164464e 
-    TransitEncryptionEnabled: False 	
-    AtRestEncryptionEnabled: False
+    TransitEncryptionEnabled: true 	
+    AtRestEncryptionEnabled: true 
     AuthToken: Test12345123451234512345 

@@ -65,8 +65,8 @@ Parameters:
     Description: >-
       Specifies the number of node groups (shards) for this Redis (cluster mode enabled) replication group. 
       For Redis (cluster mode disabled) either omit this parameter or set it to 1. The current default in this cloudformation template is set to 2 to enable cluster mode by default
-    Type: Integer
-    Default: 2   
+    Type: String
+    Default: '2'   
   ReplicasPerNodeGroup:
     Description: >-
       The number of cache clusters for this replication group. If MultiAZ
@@ -79,7 +79,7 @@ Parameters:
     Description: >-
       The port number on which each member of the replication group accepts
       connections.
-    Type: String
+    Type: Number
     Default: '6379'
     MinValue: '1'
     MaxValue: '65535'
