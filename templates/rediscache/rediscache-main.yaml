@@ -287,7 +287,7 @@ Resources:
     Type: 'AWS::ElastiCache::ParameterGroup'
     Properties:
       Description: DragonflyRedisParamGroup
-      CacheParameterGroupFamily: default.redis5.0.cluster.on
+      CacheParameterGroupFamily: redis5.0
       Properties:
         active-defrag-max-scan-fields: '10000'
 Outputs:
