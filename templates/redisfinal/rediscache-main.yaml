@@ -144,10 +144,14 @@ Parameters:
     Default: 'true'
   AuthToken:
     Type: String
+    Default: ''
+    MaxLength: 128
     Description: >-
       Auth Token is a reserved parameter. Auth Token is the password used by the clients to access the redis server when authtoken is specified. 
       Passwords must be only printable ASCII characters. Must be at least 16 characters and no more than 128 characters in length. For more password constraints information, 
       see http://redis.io/commands/AUTH.
+Conditions:
+  HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
 Resources:
   PasswordGeneratorLogGroup:
     Type: AWS::Logs::LogGroup
@@ -257,7 +261,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !Ref AuthToken      
+      AuthToken: !If [HasAuthToken, !Ref AuthToken, !Ref 'AWS::NoValue']
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The redis endpoint'
