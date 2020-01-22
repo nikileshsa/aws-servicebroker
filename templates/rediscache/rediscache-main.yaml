@@ -130,10 +130,10 @@ Parameters:
     Type: 'AWS::EC2::Subnet::Id'
   TransitEncryptionEnabled:
     Type: String
-    Default: 'true'
+    Default: 'false'
   AtRestEncryptionEnabled:  
     Type: String
-    Default: 'true'
+    Default: 'false'
   AuthToken:
     Type: String
     Default: ''
