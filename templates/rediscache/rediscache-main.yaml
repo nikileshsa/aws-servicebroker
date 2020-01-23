@@ -267,7 +267,7 @@ Resources:
       AutomaticFailoverEnabled: !Ref MultiAZSupport
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
-      CacheParameterGroupName: default.redis5.0.cluster.on
+      CacheParameterGroupName: !Ref RedisParameterGroup
       Engine: redis
       ReplicasPerNodeGroup: !Ref ReplicasPerNodeGroup
       Port: !Ref RedisPort
@@ -288,7 +288,8 @@ Resources:
     Properties:
       Description: Dragonfly Redis Param Group
       CacheParameterGroupFamily: redis5.0
-      Properties: {}
+      Properties: 
+        stream-node-max-bytes: 4096
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
