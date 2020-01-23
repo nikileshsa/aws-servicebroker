@@ -267,7 +267,7 @@ Resources:
       AutomaticFailoverEnabled: !Ref MultiAZSupport
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
-      CacheParameterGroupName: !Ref MyParameterGroup
+      CacheParameterGroupName: !Ref RedisParameterGroup
       Engine: redis
       ReplicasPerNodeGroup: !Ref ReplicasPerNodeGroup
       Port: !Ref RedisPort
@@ -283,13 +283,12 @@ Resources:
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
       AuthToken: !If [HasAuthToken, !Ref AuthToken, !Ref 'AWS::NoValue']
-  MyParameterGroup:
+  RedisParameterGroup:
     Type: 'AWS::ElastiCache::ParameterGroup'
     Properties:
-      Description: DragonflyRedisParamGroup
+      Description: Dragonfly Redis Param Group
       CacheParameterGroupFamily: redis5.0
-      Properties:
-        active-defrag-max-scan-fields: '10000'
+      Properties: {}
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
