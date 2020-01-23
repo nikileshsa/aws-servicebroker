@@ -290,6 +290,7 @@ Resources:
       CacheParameterGroupFamily: redis5.0
       Properties: 
         stream-node-max-bytes: 4096
+        cluster-enabled: 'yes'
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
