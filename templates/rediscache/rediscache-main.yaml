@@ -267,7 +267,7 @@ Resources:
       AutomaticFailoverEnabled: !Ref MultiAZSupport
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
-      CacheParameterGroupName: !Ref RedisParameterGroup
+      CacheParameterGroupName: default.redis5.0.cluster.on
       Engine: redis
       ReplicasPerNodeGroup: !Ref ReplicasPerNodeGroup
       Port: !Ref RedisPort
