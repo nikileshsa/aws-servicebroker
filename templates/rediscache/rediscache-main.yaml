@@ -141,7 +141,10 @@ Parameters:
     Description: >-
         Auth Token is a reserved parameter. Auth Token is the password used by the clients to access the redis server when authtoken is specified. 
         Passwords must be only printable ASCII characters. Must be at least 16 characters and no more than 128 characters in length. For more password constraints information, 
-        see http://redis.io/commands/AUTH.  
+        see http://redis.io/commands/AUTH.
+  NotifyKeySpaceEvents:
+    Type: String
+    Default: ''    
 Conditions:
   HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
 Resources:
@@ -291,6 +294,7 @@ Resources:
       Properties: 
         stream-node-max-bytes: 4096
         cluster-enabled: 'yes'
+        notify-keyspace-events: !Ref NotifyKeySpaceEvents
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The DNS address of the primary read-write cache node.'
