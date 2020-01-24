@@ -18,6 +18,7 @@ Metadata:
       cache environment.
     DocumentationUrl: https://aws.amazon.com/documentation/elasticache/
     ProviderDisplayName: Amazon Web Services
+    UpdatableParameters: [CacheNodeType,NotifyKeySpaceEvents]
     ServicePlans:
       production:
         DisplayName: Production
