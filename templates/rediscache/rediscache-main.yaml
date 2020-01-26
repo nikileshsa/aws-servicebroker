@@ -18,7 +18,7 @@ Metadata:
       cache environment.
     DocumentationUrl: https://aws.amazon.com/documentation/elasticache/
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow]
+    UpdatableParameters: [CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow,NumNodeGroups]
     ServicePlans:
       production:
         DisplayName: Production
@@ -70,6 +70,12 @@ Parameters:
     Type: Number
     MinValue: '1'
     MaxValue: '6'
+  NumNodeGroups:
+    Description: >-
+      An optional parameter that specifies the number of node groups (shards) for this Redis (cluster mode enabled) replication group. For Redis (cluster mode disabled) either omit this parameter or set it to 1. 
+      If you set UseOnlineResharding to true, you can update NumNodeGroups without interruption. When UseOnlineResharding is set to false, or is not specified, updating NumNodeGroups results in replacement.
+    Default: '2'
+    Type: Number
   RedisPort:
     Description: >-
       The port number on which each member of the replication group accepts
@@ -145,7 +151,15 @@ Parameters:
         see http://redis.io/commands/AUTH.
   NotifyKeySpaceEvents:
     Type: String
-    Default: ''    
+    Default: ''
+  AllowVersionUpgrade:
+    Description: Indicates that minor engine upgrades will be applied automatically
+      to the cache cluster during the maintenance window. The default value is true.
+    Type: String
+    Default: 'True'
+    AllowedValues:
+    - 'True'
+    - 'False'    
 Conditions:
   HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
 Resources:
@@ -269,6 +283,7 @@ Resources:
     Type: 'AWS::ElastiCache::ReplicationGroup'
     Properties:
       AutomaticFailoverEnabled: !Ref MultiAZSupport
+      AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
       CacheParameterGroupName: !Ref RedisParameterGroup
@@ -283,10 +298,12 @@ Resources:
           - GroupId
       SnapshotRetentionLimit: !Ref SnapshotRetentionLimit
       SnapshotWindow: !Ref SnapshotWindow
-      NumNodeGroups: 2
+      NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
       AuthToken: !If [HasAuthToken, !Ref AuthToken, !Ref 'AWS::NoValue']
+      UpdatePolicy:
+        UseOnlineResharding: true
   RedisParameterGroup:
     Type: 'AWS::ElastiCache::ParameterGroup'
     Properties:
