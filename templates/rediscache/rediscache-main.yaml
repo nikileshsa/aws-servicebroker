@@ -51,6 +51,12 @@ Parameters:
       - cache.r3.2xlarge
       - cache.r3.4xlarge
       - cache.r3.8xlarge
+  EngineVersion:
+    Description: Family to be used with cluster or parameter group
+    Type: String
+    AllowedValues:
+    - 4.0.10
+    Default: 4.0.10      
   MultiAZSupport:
     Description: >-
       Indicates whether Multi-AZ is enabled. When Multi-AZ is enabled, a
@@ -288,6 +294,7 @@ Resources:
       CacheSubnetGroupName: !Ref SubnetGroup
       CacheParameterGroupName: !Ref RedisParameterGroup
       Engine: redis
+      EngineVersion: !Ref EngineVersion
       ReplicasPerNodeGroup: !Ref ReplicasPerNodeGroup
       Port: !Ref RedisPort
       PreferredMaintenanceWindow: !Ref PreferredMaintenanceWindow
@@ -308,7 +315,7 @@ Resources:
     Type: 'AWS::ElastiCache::ParameterGroup'
     Properties:
       Description: Dragonfly Redis Param Group
-      CacheParameterGroupFamily: redis5.0
+      CacheParameterGroupFamily: redis4.0
       Properties: 
         stream-node-max-bytes: 4096
         cluster-enabled: 'yes'
