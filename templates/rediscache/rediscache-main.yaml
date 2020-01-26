@@ -317,7 +317,6 @@ Resources:
       Description: Dragonfly Redis Param Group
       CacheParameterGroupFamily: redis4.0
       Properties: 
-        stream-node-max-bytes: 4096
         cluster-enabled: 'yes'
         notify-keyspace-events: !Ref NotifyKeySpaceEvents
 Outputs:
