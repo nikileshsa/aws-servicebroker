@@ -318,6 +318,7 @@ Resources:
     Properties:
       Description: 'This is the secret for my Elastic cache instance'
       GenerateSecretString:
+        SecretStringTemplate: '{"username": "admin"}'
         GenerateStringKey: 'password'
         PasswordLength: 20
         ExcludeCharacters: '"@/\'
