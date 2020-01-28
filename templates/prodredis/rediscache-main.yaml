@@ -18,7 +18,7 @@ Metadata:
       cache environment.
     DocumentationUrl: https://aws.amazon.com/documentation/elasticache/
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow,NumNodeGroups]
+    UpdatableParameters: [CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow, NumNodeGroups]
     ServicePlans:
       production:
         DisplayName: Production
@@ -37,20 +37,42 @@ Parameters:
   CacheNodeType:
     Description: The instance type the nodes will launch under.
     Type: String
-    Default: cache.m3.medium
+    Default: cache.m4.large
     AllowedValues:
       - cache.t2.micro
       - cache.t2.small
       - cache.t2.medium
-      - cache.m3.medium
-      - cache.m3.large
-      - cache.m3.xlarge
-      - cache.m3.2xlarge
+      - cache.t3.micro
+      - cache.t3.small
+      - cache.t3.medium
+      - cache.m4.large
+      - cache.m4.xlarge
+      - cache.m4.2xlarge
+      - cache.m4.4xlarge
+      - cache.m4.10xlarge
+      - cache.m5.large
+      - cache.m5.xlarge
+      - cache.m5.2xlarge
+      - cache.m5.4xlarge
+      - cache.m5.12xlarge
+      - cache.m5.24xlarge
       - cache.r3.large
       - cache.r3.xlarge
       - cache.r3.2xlarge
       - cache.r3.4xlarge
       - cache.r3.8xlarge
+      - cache.r4.large
+      - cache.r4.xlarge
+      - cache.r4.2xlarge
+      - cache.r4.4xlarge
+      - cache.r4.8xlarge
+      - cache.r4.16xlarge
+      - cache.r5.large
+      - cache.r5.xlarge 
+      - cache.r5.2xlarge
+      - cache.r5.4xlarge
+      - cache.r5.12xlarge
+      - cache.r5.24xlarge
   EngineVersion:
     Description: Family to be used with cluster or parameter group
     Type: String
@@ -164,7 +186,189 @@ Parameters:
     Default: 'True'
     AllowedValues:
     - 'True'
-    - 'False'    
+    - 'False'
+  activedefrag:
+    Type: String
+    Default: 'no'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+  active-defrag-cycle-max:
+    Type: Number
+    Default: '75'
+    MinValue: '1'
+    MaxValue: '75'
+  active-defrag-cycle-min:
+    Type: Number
+    Default: '25'
+    MinValue: '1'
+    MaxValue: '75'
+  active-defrag-ignore-bytes:
+    Type: Number
+    Default: '104857600'
+    MinValue: '1048576'
+  active-defrag-threshold-lower:
+    Type: Number
+    Default: '10'
+    MinValue: '1'
+    MaxValue: '100'
+  active-defrag-threshold-upper:
+    Type: Number
+    Default: '1'
+    MinValue: '1'
+    MaxValue: '100'
+  client-output-buffer-limit-normal-hard-limit:
+    Type: Number
+    Default: '0'
+    MinValue: '0'
+  client-output-buffer-limit-normal-soft-limit:
+    Type: Number
+    Default: '0'
+    MinValue: '0'
+  client-output-buffer-limit-normal-soft-seconds:
+    Type: Number
+    Default: '0'
+    MinValue: '0'
+  client-output-buffer-limit-pubsub-hard-limit:
+    Type: Number
+    Default: '33554432'
+    MinValue: '0'
+  client-output-buffer-limit-pubsub-soft-limit:
+    Type: Number
+    Default: '8388608'
+    MinValue: '0'
+  client-output-buffer-limit-pubsub-soft-seconds:
+    Type: Number
+    Default: '60'
+    MinValue: '0'
+  client-query-buffer-limit:
+    Type: Number
+    Default: '1073741824'
+    MinValue: '1048576'
+    MaxValue: '1073741824'
+  close-on-slave-write:
+    Type: String
+    Default: 'yes'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+  cluster-require-full-coverage:
+    Type: String
+    Default: 'no'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+  hash-max-ziplist-entries:
+    Type: Number
+    Default: '512'
+    MinValue: '0'
+  hash-max-ziplist-value:
+    Type: Number
+    Default: '64'
+    MinValue: '0'
+  hll-sparse-max-bytes:
+    Type: Number
+    Default: '3000'
+    MinValue: '1'
+    MaxValue: '16000'
+  lazyfree-lazy-eviction:
+    Type: String
+    Default: 'no'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+  lazyfree-lazy-expire:
+    Type: String
+    Default: 'no'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+  lazyfree-lazy-server-del:
+    Type: String
+    Default: 'no'
+    AllowedValues:
+      - 'yes'
+      - 'no'
+  lfu-decay-time:
+    Type: Number
+    Default: '1'
+    MinValue: '0'
+  lfu-log-factor:
+    Type: Number
+    Default: '10'
+    MinValue: '1'
+  list-compress-depth:
+    Type: Number
+    Default: '0'
+    MinValue: '0'
+  maxmemory-policy:
+  Type: String
+  Default: 'volatile-lru'
+  AllowedValues:
+    - 'volatile-lru'
+    - 'allkeys-lru'
+    - 'volatile-lfu'
+    - 'allkeys-lfu'
+    - 'volatile-random'
+    - 'allkeys-random'
+    - 'volatile-ttl'
+    - 'noeviction'
+  maxmemory-samples:
+    Type: Number
+    Default: '3'
+    MinValue: '1'
+  min-slaves-max-lag:
+    Type: Number
+    Default: '10'
+    MinValue: '0'
+  min-slaves-to-write:
+    Type: Number
+    Default: '0'
+    MinValue: '0'
+  proto-max-bulk-len:
+    Type: Number
+    Default: '536870912'
+    MinValue: '1048576'
+    MaxValue: '536870912'
+  repl-backlog-size:
+    Type: Number
+    Default: '1048576'
+    MinValue: '16384'
+  repl-backlog-ttl:
+    Type: Number
+    Default: '3600'
+    MinValue: '0'
+  reserved-memory-percent:
+    Type: Number
+    Default: '25'
+    MinValue: '0'
+    MaxValue: '100'
+  set-max-intset-entries:
+    Type: Number
+    Default: '512'
+    MinValue: '0'
+  slowlog-log-slower-than:
+    Type: Number
+    Default: '10000'
+  slowlog-max-len:
+    Type: Number
+    Default: '128'
+    MinValue: '0'
+  tcp-keepalive:
+    Type: Number
+    Default: '300'
+    MinValue: '0'
+  timeout:
+    Type: Number
+    Default: '0'
+  zset-max-ziplist-entries:
+    Type: Number
+    Default: '0'
+    MinValue: '128'
+  zset-max-ziplist-value:
+    Type: Number
+    Default: '64'
+    MinValue: '0'
 Conditions:
   HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
 Resources:
@@ -291,6 +495,44 @@ Resources:
       Properties: 
         cluster-enabled: 'yes'
         notify-keyspace-events: !Ref NotifyKeySpaceEvents
+        activedefrag: !Ref activedefrag
+        active-defrag-cycle-max: !Ref active-defrag-cycle-max
+        active-defrag-ignore-bytes: !Ref active-defrag-ignore-bytes
+        active-defrag-threshold-lower: !Ref active-defrag-threshold-lower
+        active-defrag-threshold-upper: !Ref active-defrag-threshold-upper
+        client-output-buffer-limit-normal-hard-limit: !Ref client-output-buffer-limit-normal-hard-limit
+        client-output-buffer-limit-normal-soft-limit: !Ref client-output-buffer-limit-normal-soft-limit
+        client-output-buffer-limit-normal-soft-seconds: !Ref client-output-buffer-limit-normal-soft-seconds
+        client-output-buffer-limit-pubsub-hard-limit: !Ref client-output-buffer-limit-pubsub-hard-limit
+        client-output-buffer-limit-pubsub-soft-limit: !Ref client-output-buffer-limit-pubsub-soft-limit
+        client-output-buffer-limit-pubsub-soft-seconds: !Ref client-output-buffer-limit-pubsub-soft-seconds
+        client-query-buffer-limit: !Ref client-query-buffer-limit
+        close-on-slave-write: !Ref close-on-slave-write
+        cluster-require-full-coverage: !Ref cluster-require-full-coverage
+        hash-max-ziplist-entries: !Ref hash-max-ziplist-entries
+        hash-max-ziplist-value: !Ref hash-max-ziplist-value
+        hll-sparse-max-bytes: !Ref hll-sparse-max-bytes
+        lazyfree-lazy-eviction: !Ref lazyfree-lazy-eviction
+        lazyfree-lazy-expire: !Ref lazyfree-lazy-expire
+        lazyfree-lazy-server-del: !Ref lazyfree-lazy-server-del
+        lfu-decay-time: !Ref lfu-decay-time
+        lfu-log-factor: !Ref lfu-log-factor
+        list-compress-depth: !Ref list-compress-depth
+        maxmemory-policy: !Ref maxmemory-policy
+        maxmemory-samples: !Ref maxmemory-samples
+        min-slaves-max-lag: !Ref min-slaves-max-lag
+        min-slaves-to-write: !Ref min-slaves-to-write
+        proto-max-bulk-len: !Ref proto-max-bulk-len
+        repl-backlog-size: !Ref repl-backlog-size
+        repl-backlog-ttl: !Ref repl-backlog-ttl
+        reserved-memory-percent: !Ref reserved-memory-percent
+        set-max-intset-entries: !Ref set-max-intset-entries
+        slowlog-log-slower-than: !Ref slowlog-log-slower-than
+        slowlog-max-len: !Ref slowlog-max-len
+        tcp-keepalive: !Ref tcp-keepalive
+        timeout: !Ref timeout
+        zset-max-ziplist-entries: !Ref zset-max-ziplist-entries
+        zset-max-ziplist-value: !Ref zset-max-ziplist-value
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The redis endpoint'
