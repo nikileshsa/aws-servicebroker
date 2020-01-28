@@ -187,121 +187,121 @@ Parameters:
     AllowedValues:
     - 'True'
     - 'False'
-  activedefrag:
+  ActiveDefrag:
     Type: String
     Default: 'no'
     AllowedValues:
       - 'yes'
       - 'no'
-  active-defrag-cycle-max:
+  ActiveDefragCycleMax:
     Type: Number
     Default: '75'
     MinValue: '1'
     MaxValue: '75'
-  active-defrag-cycle-min:
+  ActiveDefragCycleMin:
     Type: Number
     Default: '25'
     MinValue: '1'
     MaxValue: '75'
-  active-defrag-ignore-bytes:
+  ActiveDefragIgnoreBytes:
     Type: Number
     Default: '104857600'
     MinValue: '1048576'
-  active-defrag-threshold-lower:
+  ActiveDefragThresholdLower:
     Type: Number
     Default: '10'
     MinValue: '1'
     MaxValue: '100'
-  active-defrag-threshold-upper:
+  ActiveDefragThresholdUpper:
     Type: Number
     Default: '1'
     MinValue: '1'
     MaxValue: '100'
-  client-output-buffer-limit-normal-hard-limit:
+  ClientOutputBufferLimitNormalHardLimit:
     Type: Number
     Default: '0'
     MinValue: '0'
-  client-output-buffer-limit-normal-soft-limit:
+  ClientOutputBufferLimitNormalSoftLimit:
     Type: Number
     Default: '0'
     MinValue: '0'
-  client-output-buffer-limit-normal-soft-seconds:
+  ClientOutputBufferLimitNormalSoftSeconds:
     Type: Number
     Default: '0'
     MinValue: '0'
-  client-output-buffer-limit-pubsub-hard-limit:
+  ClientOutputBufferLimitPubsubHardLimit:
     Type: Number
     Default: '33554432'
     MinValue: '0'
-  client-output-buffer-limit-pubsub-soft-limit:
+  ClientOutputBufferLimitPubsubSoftLimit:
     Type: Number
     Default: '8388608'
     MinValue: '0'
-  client-output-buffer-limit-pubsub-soft-seconds:
+  ClientOutputBufferLimitPubsubSoftSeconds:
     Type: Number
     Default: '60'
     MinValue: '0'
-  client-query-buffer-limit:
+  ClientQueryBufferLimit:
     Type: Number
     Default: '1073741824'
     MinValue: '1048576'
     MaxValue: '1073741824'
-  close-on-slave-write:
+  CloseOnSlaveWrite:
     Type: String
     Default: 'yes'
     AllowedValues:
       - 'yes'
       - 'no'
-  cluster-require-full-coverage:
+  ClusterRequireFullCoverage:
     Type: String
     Default: 'no'
     AllowedValues:
       - 'yes'
       - 'no'
-  hash-max-ziplist-entries:
+  HashMaxZiplistEntries:
     Type: Number
     Default: '512'
     MinValue: '0'
-  hash-max-ziplist-value:
+  HashMaxZiplistValue:
     Type: Number
     Default: '64'
     MinValue: '0'
-  hll-sparse-max-bytes:
+  HllSparseMaxBytes:
     Type: Number
     Default: '3000'
     MinValue: '1'
     MaxValue: '16000'
-  lazyfree-lazy-eviction:
+  LazyfreeLazyEviction:
     Type: String
     Default: 'no'
     AllowedValues:
       - 'yes'
       - 'no'
-  lazyfree-lazy-expire:
+  LazyfreeLazyExpire:
     Type: String
     Default: 'no'
     AllowedValues:
       - 'yes'
       - 'no'
-  lazyfree-lazy-server-del:
+  LazyfreeLazyServerDel:
     Type: String
     Default: 'no'
     AllowedValues:
       - 'yes'
       - 'no'
-  lfu-decay-time:
+  LfuDecayTime:
     Type: Number
     Default: '1'
     MinValue: '0'
-  lfu-log-factor:
+  LfuLogFactor:
     Type: Number
     Default: '10'
     MinValue: '1'
-  list-compress-depth:
+  ListCompressDepth:
     Type: Number
     Default: '0'
     MinValue: '0'
-  maxmemory-policy:
+  MaxmemoryPolicy:
     Type: String
     Default: 'volatile-lru'
     AllowedValues:
@@ -313,59 +313,59 @@ Parameters:
       - 'allkeys-random'
       - 'volatile-ttl'
       - 'noeviction'
-  maxmemory-samples:
+  MaxmemorySamples:
     Type: Number
     Default: '3'
     MinValue: '1'
-  min-slaves-max-lag:
+  MinSlavesMaxLag:
     Type: Number
     Default: '10'
     MinValue: '0'
-  min-slaves-to-write:
+  MinSlavesToWrite:
     Type: Number
     Default: '0'
     MinValue: '0'
-  proto-max-bulk-len:
+  ProtoMaxBulkLen:
     Type: Number
     Default: '536870912'
     MinValue: '1048576'
     MaxValue: '536870912'
-  repl-backlog-size:
+  ReplBacklogSize:
     Type: Number
     Default: '1048576'
     MinValue: '16384'
-  repl-backlog-ttl:
+  ReplBacklogTtl:
     Type: Number
     Default: '3600'
     MinValue: '0'
-  reserved-memory-percent:
+  ReservedMemoryPercent:
     Type: Number
     Default: '25'
     MinValue: '0'
     MaxValue: '100'
-  set-max-intset-entries:
+  SetMaxIntSetEntries:
     Type: Number
     Default: '512'
     MinValue: '0'
-  slowlog-log-slower-than:
+  SlowlogLogSlowerThan:
     Type: Number
     Default: '10000'
-  slowlog-max-len:
+  SlowlogMaxLen:
     Type: Number
     Default: '128'
     MinValue: '0'
-  tcp-keepalive:
+  TcpKeepalive:
     Type: Number
     Default: '300'
     MinValue: '0'
-  timeout:
+  Timeout:
     Type: Number
     Default: '0'
-  zset-max-ziplist-entries:
+  ZsetMaxZiplistEntries:
     Type: Number
     Default: '0'
     MinValue: '128'
-  zset-max-ziplist-value:
+  ZsetMaxZiplistValue:
     Type: Number
     Default: '64'
     MinValue: '0'
@@ -495,44 +495,45 @@ Resources:
       Properties: 
         cluster-enabled: 'yes'
         notify-keyspace-events: !Ref NotifyKeySpaceEvents
-        activedefrag: !Ref activedefrag
-        active-defrag-cycle-max: !Ref active-defrag-cycle-max
-        active-defrag-ignore-bytes: !Ref active-defrag-ignore-bytes
-        active-defrag-threshold-lower: !Ref active-defrag-threshold-lower
-        active-defrag-threshold-upper: !Ref active-defrag-threshold-upper
-        client-output-buffer-limit-normal-hard-limit: !Ref client-output-buffer-limit-normal-hard-limit
-        client-output-buffer-limit-normal-soft-limit: !Ref client-output-buffer-limit-normal-soft-limit
-        client-output-buffer-limit-normal-soft-seconds: !Ref client-output-buffer-limit-normal-soft-seconds
-        client-output-buffer-limit-pubsub-hard-limit: !Ref client-output-buffer-limit-pubsub-hard-limit
-        client-output-buffer-limit-pubsub-soft-limit: !Ref client-output-buffer-limit-pubsub-soft-limit
-        client-output-buffer-limit-pubsub-soft-seconds: !Ref client-output-buffer-limit-pubsub-soft-seconds
-        client-query-buffer-limit: !Ref client-query-buffer-limit
-        close-on-slave-write: !Ref close-on-slave-write
-        cluster-require-full-coverage: !Ref cluster-require-full-coverage
-        hash-max-ziplist-entries: !Ref hash-max-ziplist-entries
-        hash-max-ziplist-value: !Ref hash-max-ziplist-value
-        hll-sparse-max-bytes: !Ref hll-sparse-max-bytes
-        lazyfree-lazy-eviction: !Ref lazyfree-lazy-eviction
-        lazyfree-lazy-expire: !Ref lazyfree-lazy-expire
-        lazyfree-lazy-server-del: !Ref lazyfree-lazy-server-del
-        lfu-decay-time: !Ref lfu-decay-time
-        lfu-log-factor: !Ref lfu-log-factor
-        list-compress-depth: !Ref list-compress-depth
-        maxmemory-policy: !Ref maxmemory-policy
-        maxmemory-samples: !Ref maxmemory-samples
-        min-slaves-max-lag: !Ref min-slaves-max-lag
-        min-slaves-to-write: !Ref min-slaves-to-write
-        proto-max-bulk-len: !Ref proto-max-bulk-len
-        repl-backlog-size: !Ref repl-backlog-size
-        repl-backlog-ttl: !Ref repl-backlog-ttl
-        reserved-memory-percent: !Ref reserved-memory-percent
-        set-max-intset-entries: !Ref set-max-intset-entries
-        slowlog-log-slower-than: !Ref slowlog-log-slower-than
-        slowlog-max-len: !Ref slowlog-max-len
-        tcp-keepalive: !Ref tcp-keepalive
-        timeout: !Ref timeout
-        zset-max-ziplist-entries: !Ref zset-max-ziplist-entries
-        zset-max-ziplist-value: !Ref zset-max-ziplist-value
+        activedefrag: !Ref ActiveDefrag
+        active-defrag-cycle-max: !Ref ActiveDefragCycleMax
+        active-defrag-cycle-min: !Ref ActiveDefragCycleMin
+        active-defrag-ignore-bytes: !Ref ActiveDefragIgnoreBytes
+        active-defrag-threshold-lower: !Ref ActiveDefragThresholdLower
+        active-defrag-threshold-upper: !Ref ActiveDefragThresholdUpper
+        client-output-buffer-limit-normal-hard-limit: !Ref ClientOutputBufferLimitNormalHardLimit
+        client-output-buffer-limit-normal-soft-limit: !Ref ClientOutputBufferLimitNormalSoftLimit
+        client-output-buffer-limit-normal-soft-seconds: !Ref ClientOutputBufferLimitNormalSoftSeconds
+        client-output-buffer-limit-pubsub-hard-limit: !Ref ClientOutputBufferLimitPubsubHardLimit
+        client-output-buffer-limit-pubsub-soft-limit: !Ref ClientOutputBufferLimitNormalSoftLimit
+        client-output-buffer-limit-pubsub-soft-seconds: !Ref ClientOutputBufferLimitPubsubSoftSeconds
+        client-query-buffer-limit: !Ref ClientQueryBufferLimit
+        close-on-slave-write: !Ref CloseOnSlaveWrite
+        cluster-require-full-coverage: !Ref ClusterRequireFullCoverage
+        hash-max-ziplist-entries: !Ref HashMaxZiplistEntries
+        hash-max-ziplist-value: !Ref HashMaxZiplistValue
+        hll-sparse-max-bytes: !Ref HllSparseMaxBytes
+        lazyfree-lazy-eviction: !Ref LazyfreeLazyEviction
+        lazyfree-lazy-expire: !Ref LazyfreeLazyExpire
+        lazyfree-lazy-server-del: !Ref LazyfreeLazyServerDel
+        lfu-decay-time: !Ref LfuDecayTime
+        lfu-log-factor: !Ref LfuLogFactor
+        list-compress-depth: !Ref ListCompressDepth
+        maxmemory-policy: !Ref MaxmemoryPolicy
+        maxmemory-samples: !Ref MaxmemorySamples
+        min-slaves-max-lag: !Ref MinSlavesMaxLag
+        min-slaves-to-write: !Ref MinSlavesToWrite
+        proto-max-bulk-len: !Ref ProtoMaxBulkLen
+        repl-backlog-size: !Ref ReplBacklogSize
+        repl-backlog-ttl: !Ref ReplBacklogTtl
+        reserved-memory-percent: !Ref ReservedMemoryPercent
+        set-max-intset-entries: !Ref SetMaxIntSetEntries
+        slowlog-log-slower-than: !Ref SlowlogLogSlowerThan
+        slowlog-max-len: !Ref SlowlogMaxLen
+        tcp-keepalive: !Ref TcpKeepalive
+        timeout: !Ref Timeout
+        zset-max-ziplist-entries: !Ref ZsetMaxZiplistEntries
+        zset-max-ziplist-value: !Ref ZsetMaxZiplistValue
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The redis endpoint'
