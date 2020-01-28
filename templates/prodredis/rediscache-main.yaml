@@ -302,17 +302,17 @@ Parameters:
     Default: '0'
     MinValue: '0'
   maxmemory-policy:
-  Type: String
-  Default: 'volatile-lru'
-  AllowedValues:
-    - 'volatile-lru'
-    - 'allkeys-lru'
-    - 'volatile-lfu'
-    - 'allkeys-lfu'
-    - 'volatile-random'
-    - 'allkeys-random'
-    - 'volatile-ttl'
-    - 'noeviction'
+    Type: String
+    Default: 'volatile-lru'
+    AllowedValues:
+      - 'volatile-lru'
+      - 'allkeys-lru'
+      - 'volatile-lfu'
+      - 'allkeys-lfu'
+      - 'volatile-random'
+      - 'allkeys-random'
+      - 'volatile-ttl'
+      - 'noeviction'
   maxmemory-samples:
     Type: Number
     Default: '3'
