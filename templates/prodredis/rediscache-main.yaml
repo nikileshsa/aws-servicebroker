@@ -316,11 +316,11 @@ Resources:
   ElasticCacheAuthSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-    Description: 'This is the secret for my Elastic cache instance'
-    GenerateSecretString:
-      GenerateStringKey: 'password'
-      PasswordLength: 20
-      ExcludeCharacters: '"@/\'
+      Description: 'This is the secret for my Elastic cache instance'
+      GenerateSecretString:
+        GenerateStringKey: 'password'
+        PasswordLength: 20
+        ExcludeCharacters: '"@/\'
             
 Outputs:
   ConfigurationEndPointAddress:
