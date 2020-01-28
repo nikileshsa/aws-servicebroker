@@ -363,7 +363,7 @@ Parameters:
     Default: '0'
   ZsetMaxZiplistEntries:
     Type: Number
-    Default: '0'
+    Default: '512'
     MinValue: '128'
   ZsetMaxZiplistValue:
     Type: Number
