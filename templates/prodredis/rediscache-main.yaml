@@ -302,7 +302,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !If [HasAuthToken, !Ref AuthToken, !Ref 'AWS::NoValue']
+      AuthToken: !If [HasAuthToken, !Join ['', ['{{resolve:secretsmanager:', !Ref ElasticCacheAuthSecret, ':SecretString:password}}' ]], !Ref 'AWS::NoValue']
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
@@ -313,6 +313,15 @@ Resources:
       Properties:
         cluster-enabled: 'yes'
         notify-keyspace-events: !Ref NotifyKeySpaceEvents
+  ElasticCacheAuthSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+    Description: 'This is the secret for my Elastic cache instance'
+    GenerateSecretString:
+      GenerateStringKey: 'password'
+      PasswordLength: 20
+      ExcludeCharacters: '"@/\'
+            
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The redis endpoint'
