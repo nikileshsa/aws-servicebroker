@@ -302,7 +302,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !If [HasAuthToken, !Join ['', ['{{resolve:secretsmanager:', !Ref ElasticCacheAuthSecret, ':SecretString:password}}' ]], !Ref 'AWS::NoValue']
+      AuthToken: !If [HasAuthToken, '{{resolve:secretsmanager:ElasticCacheAuthSecret:SecretString:password}}', !Ref 'AWS::NoValue']
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
@@ -337,6 +337,6 @@ Outputs:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
   AuthToken:
     Description: 'Auth Token'
-    Value: !Join ['', ['{{resolve:secretsmanager:', !Ref ElasticCacheAuthSecret, ':SecretString:password}}' ]]    
+    Value: '{{resolve:secretsmanager:ElasticCacheAuthSecret:SecretString:password}}' 
     Export:
       Name: !Sub '${AWS::StackName}-Authtoken'
