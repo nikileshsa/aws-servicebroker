@@ -561,7 +561,7 @@ Resources:
       SecretName: AuroraDBAdmin
       SecretUserName: auroraAdmin
       SecretDescription: Admin password for Aurora database - randomly generated
-      Region: us-west-2                 
+      Region: us-east-1                 
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The redis endpoint'
