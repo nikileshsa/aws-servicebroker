@@ -302,7 +302,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !GetAtt RandomPassword.Password
+      AuthToken: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
@@ -511,6 +511,6 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
   RandomPassword: # This exposes the password in cleartext; don't do this at home :)
-      Value: !GetAtt RandomPassword.Password
+      Value: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
   RandomPasswordParameterName:
       Value: !GetAtt RandomPassword.ParameterName  
