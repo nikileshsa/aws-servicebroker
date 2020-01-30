@@ -312,7 +312,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: 'Test1234Test1234Test1234Test1234Test1234'
+      AuthToken: !GetAtt NikAWSSBInjectedGeneratePassword.MasterUserPassword
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
