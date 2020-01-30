@@ -553,16 +553,6 @@ Resources:
       SecretAction: get
       SecretName: myExistingSecret
       Region: us-east-1
-  StoreAWSSecret:
-    Type: AWS::CloudFormation::CustomResource
-    Properties:
-      ServiceToken: !GetAtt SecretsManagerLambdaFunction.Arn
-      SecretAction: upsert
-      SecretName: PostgresDBAdmin
-      SecretUserName: postgresAdmin
-      SecretPassword: !Ref DatabasePassword
-      SecretDescription: Admin password for the Postgres database
-      Region: us-east-1
   GenerateAWSSecret:
     Type: AWS::CloudFormation::CustomResource
     Properties:
