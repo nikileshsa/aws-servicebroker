@@ -195,6 +195,10 @@ Parameters:
     - 'False'
 Conditions:
   HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
+  AutoPassword:
+    !Equals
+    - !Ref MasterUserPassword
+    - Auto
 Resources:
   PasswordGeneratorLogGroup:
     Type: AWS::Logs::LogGroup
@@ -308,7 +312,11 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
+      AuthToken: 
+        !If
+        - AutoPassword
+        - !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
+        - !Ref MasterUserPassword
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
