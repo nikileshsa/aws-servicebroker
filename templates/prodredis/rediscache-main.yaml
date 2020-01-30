@@ -312,7 +312,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: 'test1234Test1234Test1234Test1234Test1234Test1234'
+      AuthToken: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
@@ -375,7 +375,12 @@ Resources:
         S3Key: functions/generate_password/lambda_function.zip
       Runtime: python3.6
       Timeout: '60'
-AWSSBInjectedGenerateDBNameRole:
+  AWSSBInjectedGeneratePassword:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt AWSSBInjectedGeneratePasswordLambda.Arn
+      Length: 32
+  AWSSBInjectedGenerateDBNameRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
