@@ -381,7 +381,7 @@ Resources:
         - Arn
       Code:
         S3Bucket: aws-sb-artrifacts-nik
-        S3Key: functions/generate_password/nik_lambda_func
+        S3Key: functions/generate_password/nik_lambda_func.zip
       Runtime: python3.6
       Timeout: '60'
   AWSSBInjectedGeneratePassword:
