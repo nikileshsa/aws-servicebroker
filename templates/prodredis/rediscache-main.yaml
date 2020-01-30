@@ -518,5 +518,3 @@ Outputs:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
   RandomPassword: # This exposes the password in cleartext; don't do this at home :)
       Value: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
-  RandomPasswordParameterName:
-      Value: !GetAtt RandomPassword.ParameterName  
