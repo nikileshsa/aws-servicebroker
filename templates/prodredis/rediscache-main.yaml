@@ -78,7 +78,13 @@ Parameters:
     Type: String
     AllowedValues:
     - 4.0.10
-    Default: 4.0.10      
+    Default: 4.0.10
+  MasterUserPassword:
+    Description: Master user database Password, if left at default a 32 character
+      password will be generated
+    Type: String
+    Default: Auto
+    NoEcho: 'True'
   MultiAZSupport:
     Description: >-
       Indicates whether Multi-AZ is enabled. When Multi-AZ is enabled, a
