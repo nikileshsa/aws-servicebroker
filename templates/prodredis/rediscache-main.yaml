@@ -371,11 +371,29 @@ Resources:
         S3Key: functions/generate_password/lambda_function.zip
       Runtime: python3.6
       Timeout: '60'
+  NikAWSSBInjectedGeneratePasswordLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: lambda_function.handler
+      Role:
+        Fn::GetAtt:
+        - AWSSBInjectedGeneratePasswordRole
+        - Arn
+      Code:
+        S3Bucket: aws-sb-artrifacts-nik
+        S3Key: functions/generate_password/nik_lambda_func
+      Runtime: python3.6
+      Timeout: '60'
   AWSSBInjectedGeneratePassword:
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: !GetAtt AWSSBInjectedGeneratePasswordLambda.Arn
       Length: 32
+  NikAWSSBInjectedGeneratePassword:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt NikAWSSBInjectedGeneratePasswordLambda.Arn
+      Length: 32    
   AWSSBInjectedGenerateDBNameRole:
     Type: AWS::IAM::Role
     Properties:
@@ -519,3 +537,5 @@ Outputs:
       Value: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
   RandomPassword2: # This exposes the password in cleartext; don't do this at home :)
       Value: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
+  RandomPassword2: # This exposes the password in cleartext; don't do this at home :)
+      Value: !GetAtt NikAWSSBInjectedGeneratePassword.MasterUserPassword
