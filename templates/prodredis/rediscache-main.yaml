@@ -85,16 +85,6 @@ Parameters:
     Type: String
     Default: Auto
     NoEcho: 'True'
-  MultiAZSupport:
-    Description: >-
-      Indicates whether Multi-AZ is enabled. When Multi-AZ is enabled, a
-      read-only replica is automatically promoted to a read-write primary
-      cluster if the existing primary cluster fails.
-    Type: String
-    Default: 'true'
-    AllowedValues:
-      - 'true'
-      - 'false'
   ReplicasPerNodeGroup:
     Description: >-
       The number of cache clusters for this replication group. If MultiAZ
@@ -161,13 +151,18 @@ Parameters:
   SubnetA:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
-      In this Dragonfly deployment we only accept 2 subnets for now
+      In this Dragonfly deployment we only accept 3 subnets for now
     Type: 'AWS::EC2::Subnet::Id'
   SubnetB:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
-      In this Dragonfly deployment we only accept 2 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'
+      In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'  
+  SubnetC:
+    Description: >-
+        One of the subnets you would like the ReplicationGroup to be created in.
+        In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'  
   TransitEncryptionEnabled:
     Type: String
     Default: 'false'
@@ -217,10 +212,11 @@ Resources:
       SubnetIds:
         - !Ref SubnetA
         - !Ref SubnetB
+        - !Ref SubnetC
   ReplicationGroup:
     Type: 'AWS::ElastiCache::ReplicationGroup'
     Properties:
-      AutomaticFailoverEnabled: !Ref MultiAZSupport
+      AutomaticFailoverEnabled: 'true'
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
