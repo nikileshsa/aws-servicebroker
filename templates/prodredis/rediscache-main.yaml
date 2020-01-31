@@ -200,78 +200,6 @@ Conditions:
     - !Ref MasterUserPassword
     - Auto
 Resources:
-  PasswordGeneratorLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${AWS::StackName}-PasswordGenerator
-      RetentionInDays: 1
-  PasswordGeneratorRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-          -
-            Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      Path: /
-      Policies:
-        -
-          PolicyName: Policy
-          PolicyDocument:
-            Statement:
-              -
-                Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                Resource: !GetAtt PasswordGeneratorLogGroup.Arn
-              -
-                Effect: Allow
-                Action:
-                  - ssm:DeleteParameter
-                  - ssm:PutParameter
-                Resource: !Sub arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${AWS::StackName}/*
-  PasswordGenerator:
-    Type: AWS::Lambda::Function
-    Properties:
-      Code:
-        ZipFile: !Sub |
-          import boto3
-          import cfnresponse
-          import secrets
-          import string
-
-          alphabet = string.ascii_letters + string.digits
-          ssm = boto3.client('ssm')
-
-          def handler(event, context):
-            try:
-              length = int(event['ResourceProperties'].get('Length', 20))
-              password = ''.join(secrets.choice(alphabet) for _ in range(length))
-
-              parameter_name = '/${AWS::StackName}/' + event['LogicalResourceId']
-              physical_resource_id = parameter_name
-
-              response_data = {'ParameterName': parameter_name, 'Password': password}
-
-              if event['RequestType'] == 'Delete':
-                try:
-                  ssm.delete_parameter(Name=parameter_name)
-                except ssm.exceptions.ParameterNotFound:
-                  pass
-              else:
-                ssm.put_parameter(Name=parameter_name, Value=password, Type='SecureString', Overwrite=True)
-
-              cfnresponse.send(event, context, cfnresponse.SUCCESS, response_data, physical_resource_id)
-            except Exception as e:
-              print(e)
-              cfnresponse.send(event, context, cfnresponse.FAILED, {})
-      Handler: index.handler
-      Role: !GetAtt AWSSBInjectedGeneratePasswordRole.Arn
-      Runtime: python3.6
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -312,7 +240,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !GetAtt NikAWSSBInjectedGeneratePassword.MasterUserPassword
+      AuthToken: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
@@ -323,16 +251,6 @@ Resources:
       Properties:
         cluster-enabled: 'yes'
         notify-keyspace-events: !Ref NotifyKeySpaceEvents
-  ElasticCacheAuthSecret:
-    Type: AWS::SecretsManager::Secret
-    Properties:
-      Description: 'This is the secret for my Elastic cache instance'
-      GenerateSecretString:
-        SecretStringTemplate: '{"username": "admin"}'
-        GenerateStringKey: 'password'
-        PasswordLength: 20
-        ExcludeCharacters: '"@/\'
-        ExcludePunctuation: true
   AWSSBInjectedGeneratePasswordRole:
     Type: AWS::IAM::Role
     Properties:
@@ -358,20 +276,6 @@ Resources:
             - logs:PutLogEvents
             Resource: '*'
   AWSSBInjectedGeneratePasswordLambda:
-    DependsOn: AWSSBInjectedCopyZips
-    Type: AWS::Lambda::Function
-    Properties:
-      Handler: lambda_function.handler
-      Role:
-        Fn::GetAtt:
-        - AWSSBInjectedGeneratePasswordRole
-        - Arn
-      Code:
-        S3Bucket: !Ref AWSSBInjectedLambdaZipsBucket
-        S3Key: functions/generate_password/lambda_function.zip
-      Runtime: python3.6
-      Timeout: '60'
-  NikAWSSBInjectedGeneratePasswordLambda:
     Type: AWS::Lambda::Function
     Properties:
       Handler: lambda_function.handler
@@ -388,140 +292,7 @@ Resources:
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: !GetAtt AWSSBInjectedGeneratePasswordLambda.Arn
-      Length: 32
-  NikAWSSBInjectedGeneratePassword:
-    Type: AWS::CloudFormation::CustomResource
-    Properties:
-      ServiceToken: !GetAtt NikAWSSBInjectedGeneratePasswordLambda.Arn
       Length: 32    
-  AWSSBInjectedGenerateDBNameRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: '2012-10-17'
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service:
-            - lambda.amazonaws.com
-          Action:
-          - sts:AssumeRole
-      Path: /
-      Policies:
-      - PolicyName: cfn_utility_get_cidrs
-        PolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            Resource: '*'
-  AWSSBInjectedGeneratePassword:
-    Type: AWS::CloudFormation::CustomResource
-    Properties:
-      ServiceToken: !GetAtt AWSSBInjectedGeneratePasswordLambda.Arn
-      Length: 32
-  AWSSBInjectedLambdaZipsBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      Tags: []
-  AWSSBInjectedCopyZips:
-    Type: AWS::CloudFormation::CustomResource
-    Properties:
-      ServiceToken: !GetAtt AWSSBInjectedCopyZipsLambda.Arn
-      DestBucket: !Ref AWSSBInjectedLambdaZipsBucket
-      SourceBucket: awsservicebrokeralpha
-      Prefix: functions/
-      Objects:
-      - get_cidrs/lambda_function.zip
-      - get_azs/lambda_function.zip
-      - generate_password/lambda_function.zip
-      - generate_dbname/lambda_function.zip
-  AWSSBInjectedCopyZipsRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: 2012-10-17
-        Statement:
-        - Effect: Allow
-          Principal:
-            Service: lambda.amazonaws.com
-          Action: sts:AssumeRole
-      ManagedPolicyArns:
-      - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-      Path: /
-      Policies:
-      - PolicyName: lambda-copier
-        PolicyDocument:
-          Version: 2012-10-17
-          Statement:
-          - Effect: Allow
-            Action:
-            - s3:GetObject
-            Resource:
-            - arn:aws:s3:::awsservicebrokeralpha/*
-          - Effect: Allow
-            Action:
-            - s3:PutObject
-            - s3:DeleteObject
-            Resource:
-            - !Sub arn:aws:s3:::${AWSSBInjectedLambdaZipsBucket}/*
-  AWSSBInjectedCopyZipsLambda:
-    Type: AWS::Lambda::Function
-    Properties:
-      Description: Copies objects from a source S3 bucket to a destination
-      Handler: index.handler
-      Runtime: python2.7
-      Role: !GetAtt AWSSBInjectedCopyZipsRole.Arn
-      Timeout: 240
-      Code:
-        ZipFile: |
-          import json
-          import logging
-          import threading
-          import boto3
-          import cfnresponse
-          def copy_objects(source_bucket, dest_bucket, prefix, objects):
-              s3 = boto3.client('s3')
-              for o in objects:
-                  key = prefix + o
-                  copy_source = {
-                      'Bucket': source_bucket,
-                      'Key': key
-                  }
-                  print('copy_source: %s' % copy_source)
-                  print('dest_bucket = %s' % dest_bucket)
-                  print('key = %s' % key)
-                  s3.copy_object(CopySource=copy_source, Bucket=dest_bucket, Key=key)
-          def delete_objects(bucket, prefix, objects):
-              s3 = boto3.client('s3')
-              objects = {'Objects': [{'Key': prefix + o} for o in objects]}
-              s3.delete_objects(Bucket=bucket, Delete=objects)
-          def timeout(event, context):
-              logging.error('Execution is about to time out, sending failure response to CloudFormation')
-              cfnresponse.send(event, context, cfnresponse.FAILED, {}, None)
-          def handler(event, context):
-              timer = threading.Timer((context.get_remaining_time_in_millis() / 1000.00) - 0.5, timeout, args=[event, context])
-              timer.start()
-              print('Received event: %s' % json.dumps(event))
-              status = cfnresponse.SUCCESS
-              try:
-                  source_bucket = event['ResourceProperties']['SourceBucket']
-                  dest_bucket = event['ResourceProperties']['DestBucket']
-                  prefix = event['ResourceProperties']['Prefix']
-                  objects = event['ResourceProperties']['Objects']
-                  if event['RequestType'] == 'Delete':
-                      delete_objects(dest_bucket, prefix, objects)
-                  else:
-                      copy_objects(source_bucket, dest_bucket, prefix, objects)
-              except Exception as e:
-                  logging.error('Exception: %s' % e, exc_info=True)
-                  status = cfnresponse.FAILED
-              finally:
-                  timer.cancel()
-                  cfnresponse.send(event, context, status, {}, None)
 Outputs:
   ConfigurationEndPointAddress:
     Description: 'The redis endpoint'
@@ -533,9 +304,5 @@ Outputs:
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
-  RandomPassword: # This exposes the password in cleartext; don't do this at home :)
+  GeneratedAuthToken:
       Value: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
-  RandomPassword2: # This exposes the password in cleartext; don't do this at home :)
-      Value: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
-  RandomPassword2: # This exposes the password in cleartext; don't do this at home :)
-      Value: !GetAtt NikAWSSBInjectedGeneratePassword.MasterUserPassword
