@@ -8,8 +8,9 @@ Metadata:
     Tags:
       - AWS
       - RDS
-      - rediscsp
-    Name: rediscsp
+      - rediscache
+      - redis
+    Name: rediscache
     DisplayName: Dragonfly ElasticRedis
     LongDescription: Dragonfly  ElasticRedis is a web service that leverages AWS ElasticCache to set
       up, manage, and scale distributed in-memory cache.It provides a high performance, resizeable, and cost-effective in-memory cache,
