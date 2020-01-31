@@ -8,9 +8,8 @@ Metadata:
     Tags:
       - AWS
       - RDS
-      - rediscache
-      - redis
-    Name: rediscache
+      - rediscsp
+    Name: rediscsp
     DisplayName: Dragonfly ElasticRedis
     LongDescription: Dragonfly  ElasticRedis is a web service that leverages AWS ElasticCache to set
       up, manage, and scale distributed in-memory cache.It provides a high performance, resizeable, and cost-effective in-memory cache,
@@ -79,12 +78,6 @@ Parameters:
     AllowedValues:
     - 4.0.10
     Default: 4.0.10
-  MasterUserPassword:
-    Description: Master user database Password, if left at default a 32 character
-      password will be generated
-    Type: String
-    Default: Auto
-    NoEcho: 'True'
   ReplicasPerNodeGroup:
     Description: >-
       The number of cache clusters for this replication group. If MultiAZ
@@ -171,8 +164,9 @@ Parameters:
     Default: 'false'
   AuthToken:
     Type: String
-    Default: ''
+    Default: Auto
     MaxLength: 128
+    NoEcho: 'True'
     Description: >-
         Auth Token is a reserved parameter. Auth Token is the password used by the clients to access the redis server when authtoken is specified. 
         Passwords must be only printable ASCII characters. Must be at least 16 characters and no more than 128 characters in length. For more password constraints information, 
@@ -189,10 +183,9 @@ Parameters:
     - 'True'
     - 'False'
 Conditions:
-  HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
-  AutoPassword:
+  AutoAuthToken:
     !Equals
-    - !Ref MasterUserPassword
+    - !Ref AuthToken
     - Auto
 Resources:
   SecurityGroup:
@@ -236,7 +229,11 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
+      AuthToken: 
+        !If
+        - AutoAuthToken
+        - !GetAtt GenerateAuthToken.AuthToken
+        - !Ref AuthToken
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
@@ -247,7 +244,7 @@ Resources:
       Properties:
         cluster-enabled: 'yes'
         notify-keyspace-events: !Ref NotifyKeySpaceEvents
-  AWSSBInjectedGeneratePasswordRole:
+  GenerateAuthTokenRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -271,23 +268,23 @@ Resources:
             - logs:CreateLogStream
             - logs:PutLogEvents
             Resource: '*'
-  AWSSBInjectedGeneratePasswordLambda:
+  GenerateAuthTokenLambda:
     Type: AWS::Lambda::Function
     Properties:
       Handler: lambda_function.handler
       Role:
         Fn::GetAtt:
-        - AWSSBInjectedGeneratePasswordRole
+        - GenerateAuthTokenRole
         - Arn
       Code:
         S3Bucket: aws-sb-artrifacts-nik
-        S3Key: functions/generate_password/nik_lambda_func.zip
+        S3Key: functions/generate_password/redis_csp_generate_password_lambda_func.zip
       Runtime: python3.6
       Timeout: '60'
-  AWSSBInjectedGeneratePassword:
+  GenerateAuthToken:
     Type: AWS::CloudFormation::CustomResource
     Properties:
-      ServiceToken: !GetAtt AWSSBInjectedGeneratePasswordLambda.Arn
+      ServiceToken: !GetAtt GenerateAuthTokenLambda.Arn
       Length: 32    
 Outputs:
   ConfigurationEndPointAddress:
@@ -301,4 +298,8 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
   GeneratedAuthToken:
-      Value: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
+      Value:
+        !If
+        - AutoAuthToken
+        - !GetAtt GenerateAuthToken.AuthToken
+        - !Ref AuthToken
