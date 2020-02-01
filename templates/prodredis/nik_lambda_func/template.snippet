@@ -3,7 +3,7 @@ Conditions:
     - !Ref ClientAuthToken
     - "Auto"
 Resources:
-  AWSSBInjectedGeneratePasswordRole:
+  AWSSBInjectedClientAuthTokenRole:
     Type: "AWS::IAM::Role"
     Properties:
       AssumeRolePolicyDocument:
@@ -30,21 +30,21 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource: "*"
-  AWSSBInjectedGeneratePasswordLambda:
+  AWSSBInjectedClientAuthTokenLambda:
     DependsOn: AWSSBInjectedCopyZips
     Type: "AWS::Lambda::Function"
     Properties:
       Handler: "lambda_function.handler"
       Role:
         Fn::GetAtt:
-          - "AWSSBInjectedGeneratePasswordRole"
+          - "AWSSBInjectedClientAuthTokenRole"
           - "Arn"
       Code:
         ZipFile: null
       Runtime: "python3.6"
       Timeout: "60"
-  AWSSBInjectedGeneratePassword:
+  AWSSBInjectedClientAuthToken:
     Type: "AWS::CloudFormation::CustomResource"
     Properties:
-      ServiceToken: !GetAtt AWSSBInjectedGeneratePasswordLambda.Arn
+      ServiceToken: !GetAtt AWSSBInjectedClientAuthTokenLambda.Arn
       Length: 32
