@@ -79,7 +79,7 @@ Parameters:
     AllowedValues:
     - 4.0.10
     Default: 4.0.10
-  MasterUserPassword:
+  ClientAuthToken:
     Description: Master user database Password, if left at default a 32 character
       password will be generated
     Type: String
@@ -192,7 +192,7 @@ Conditions:
   HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
   AutoPassword:
     !Equals
-    - !Ref MasterUserPassword
+    - !Ref ClientAuthToken
     - Auto
 Resources:
   SecurityGroup:
@@ -236,7 +236,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
+      AuthToken: !GetAtt AWSSBInjectedGeneratePassword.ClientAuthToken
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
@@ -301,4 +301,4 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
   GeneratedAuthToken:
-      Value: !GetAtt AWSSBInjectedGeneratePassword.MasterUserPassword
+      Value: !GetAtt AWSSBInjectedGeneratePassword.ClientAuthToken
