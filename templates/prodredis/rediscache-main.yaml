@@ -295,5 +295,8 @@ Outputs:
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
-  GeneratedAuthToken:
+  AuthToken:
       Value: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
+      Export:
+        Name: !Sub '${AWS::StackName}-AuthToken'
+  
