@@ -181,7 +181,6 @@ Parameters:
     - 'True'
     - 'False'
 Conditions:
-  HasAuthToken: !Not [!Equals [!Ref AuthToken, '']]
   AutoAuthToken:
     !Equals
     - !Ref ClientAuthToken
