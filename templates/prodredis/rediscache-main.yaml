@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   A Cloudformation template to create Redis cluster using AWS managed ElasticCache. The template creates a redis deployment in cluster mode 
-  and references a VPCID and two subnets for multizone deployment.
+  and references a VPCID and three subnets for multizone deployment.
 Metadata:
   AWS::ServiceBroker::Specification:
     Version: 1.0
