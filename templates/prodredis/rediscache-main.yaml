@@ -80,8 +80,8 @@ Parameters:
     - 4.0.10
     Default: 4.0.10
   ClientAuthToken:
-    Description: Master user database Password, if left at default a 32 character
-      password will be generated
+    Description: Redis Client Auth Token, if left at default a 32 character
+      token will be generated for redis clients to connect to cluster
     Type: String
     Default: Auto
     NoEcho: 'True'
@@ -236,7 +236,7 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: !GetAtt AWSSBInjectedGeneratePassword.ClientAuthToken
+      AuthToken: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
@@ -247,7 +247,7 @@ Resources:
       Properties:
         cluster-enabled: 'yes'
         notify-keyspace-events: !Ref NotifyKeySpaceEvents
-  AWSSBInjectedGeneratePasswordRole:
+  AWSSBInjectedClientAuthTokenRole:
     Type: AWS::IAM::Role
     Properties:
       AssumeRolePolicyDocument:
@@ -271,23 +271,23 @@ Resources:
             - logs:CreateLogStream
             - logs:PutLogEvents
             Resource: '*'
-  AWSSBInjectedGeneratePasswordLambda:
+  AWSSBInjectedClientAuthTokenLambda:
     Type: AWS::Lambda::Function
     Properties:
       Handler: lambda_function.handler
       Role:
         Fn::GetAtt:
-        - AWSSBInjectedGeneratePasswordRole
+        - AWSSBInjectedClientAuthTokenRole
         - Arn
       Code:
         S3Bucket: aws-sb-artrifacts-nik
         S3Key: functions/generate_password/nik_lambda_func.zip
       Runtime: python3.6
       Timeout: '60'
-  AWSSBInjectedGeneratePassword:
+  AWSSBInjectedClientAuthToken:
     Type: AWS::CloudFormation::CustomResource
     Properties:
-      ServiceToken: !GetAtt AWSSBInjectedGeneratePasswordLambda.Arn
+      ServiceToken: !GetAtt AWSSBInjectedClientAuthTokenLambda.Arn
       Length: 32    
 Outputs:
   ConfigurationEndPointAddress:
@@ -301,4 +301,4 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
   GeneratedAuthToken:
-      Value: !GetAtt AWSSBInjectedGeneratePassword.ClientAuthToken
+      Value: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
