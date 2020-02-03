@@ -409,4 +409,6 @@ Outputs:
       Export:
         Name: !Sub '${AWS::StackName}-AuthToken'
   ParameterGroup:
-      Value: !GetAtt RedisParameterGroup
+      Value: !GetAtt 'ReplicationGroup.CacheParameterGroupName'
+      Export:
+        Name: !Sub '${AWS::StackName}-ParameterGroup'
