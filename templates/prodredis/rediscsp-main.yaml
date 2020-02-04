@@ -170,10 +170,10 @@ Parameters:
     Type: 'AWS::EC2::Subnet::Id'  
   TransitEncryptionEnabled:
     Type: String
-    Default: 'false'
+    Default: 'true'
   AtRestEncryptionEnabled:  
     Type: String
-    Default: 'false'
+    Default: 'true'
   NotifyKeySpaceEvents:
     Type: String
     Default: ''
@@ -397,7 +397,7 @@ Resources:
         - AWSSBInjectedClientAuthTokenRole
         - Arn
       Code:
-        S3Bucket: aws-sb-artrifacts-nik
+        S3Bucket: dflyawsservicebroker-tesseractinternal
         S3Key: functions/generate_password/rediscsp_gentoken_lambda_func.zip
       Runtime: python3.6
       Timeout: '60'
@@ -407,20 +407,23 @@ Resources:
       ServiceToken: !GetAtt AWSSBInjectedClientAuthTokenLambda.Arn
       Length: 32    
 Outputs:
-  ConfigurationEndPointAddress:
+  Host:
     Description: 'The redis endpoint'
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Address'
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointAddress'
-  ConfigurationEndPointPort:
+  Port:
     Description: 'The redis port'
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
-  AuthToken:
+  Password:
       Value: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
       Export:
         Name: !Sub '${AWS::StackName}-AuthToken'
   RedisCluster:
     Description: Name of Redis Cluster
     Value: !Ref ReplicationGroup
+  User:
+    Description: This is not used for creating the replication group. It is solely present for the dependennt workflows which has only support for username@password semantics
+    Value: 'appuser'
