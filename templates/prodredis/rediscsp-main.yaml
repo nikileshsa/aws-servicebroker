@@ -7,7 +7,6 @@ Metadata:
     Version: 1.0
     Tags:
       - AWS
-      - RDS
       - rediscsp
       - redis
     Name: rediscsp
@@ -34,6 +33,9 @@ Metadata:
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues: {}
 Parameters:
+  ElasticCacheTags:
+    Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the keys clustername and namespace. 
+    Type: CommaDelimitedList
   CacheNodeType:
     Description: The instance type the nodes will launch under.
     Type: String
@@ -276,7 +278,7 @@ Conditions:
     !Equals
     - !Ref ClientAuthToken
     - Auto
-Resources:
+Resources:  
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -323,6 +325,13 @@ Resources:
         - AutoAuthToken
         - !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
         - !Ref ClientAuthToken
+      Tags:   
+        - 
+          Key: "clustername"
+          Value: !Select [ 0, !Ref ElasticCacheTags ]
+        -  
+          Key: "namespace"
+          Value: !Select [ 1, !Ref ElasticCacheTags ]
     UpdatePolicy:
       UseOnlineResharding: true
   RedisParameterGroup:
