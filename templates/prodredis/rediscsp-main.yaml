@@ -36,9 +36,6 @@ Parameters:
   ElasticCacheTags:
     Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the keys clustername and namespace. 
     Type: CommaDelimitedList
-  ClusterName:
-    Description: Name of the cluster
-    Type: String
   CacheNodeType:
     Description: The instance type the nodes will launch under.
     Type: String
@@ -305,7 +302,6 @@ Resources:
     Properties:
       AutomaticFailoverEnabled: 'true'
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
-      ClusterName: !Ref ClusterName
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
       CacheParameterGroupName: !Ref RedisParameterGroup
@@ -421,9 +417,6 @@ Outputs:
       Value: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
       Export:
         Name: !Sub '${AWS::StackName}-AuthToken'
-  RedisCluster:
-    Description: Name of Redis Cluster
-    Value: !Ref ReplicationGroup
   User:
     Description: This is not used for creating the replication group. It is solely present for the dependennt workflows which has only support for username@password semantics
     Value: 'appuser'
