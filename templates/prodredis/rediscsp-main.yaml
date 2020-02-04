@@ -36,6 +36,9 @@ Parameters:
   ElasticCacheTags:
     Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the keys clustername and namespace. 
     Type: CommaDelimitedList
+  ClusterName:
+    Description: Name of the cluster
+    Type: String
   CacheNodeType:
     Description: The instance type the nodes will launch under.
     Type: String
@@ -302,6 +305,7 @@ Resources:
     Properties:
       AutomaticFailoverEnabled: 'true'
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
+      ClusterName: !Ref ClusterName
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
       CacheParameterGroupName: !Ref RedisParameterGroup
