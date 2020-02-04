@@ -417,7 +417,3 @@ Outputs:
       Value: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
       Export:
         Name: !Sub '${AWS::StackName}-AuthToken'
-  ParameterGroup:
-      Value: !GetAtt 'ReplicationGroup.CacheParameterGroupName'
-      Export:
-        Name: !Sub '${AWS::StackName}-ParameterGroup'
