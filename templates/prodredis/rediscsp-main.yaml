@@ -417,3 +417,6 @@ Outputs:
       Value: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
       Export:
         Name: !Sub '${AWS::StackName}-AuthToken'
+  RedisCluster:
+    Description: Name of Redis Cluster
+    Value: !Ref ReplicationGroup
