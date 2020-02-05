@@ -424,8 +424,3 @@ Outputs:
   User:
     Description: This is not used for creating the replication group. It is solely present for the dependennt workflows which has only support for username@password semantics
     Value: 'appuser'
-  ReplicationGroupName:
-    Description: 'The Replication group name'
-    Value: !GetAtt 'ReplicationGroup.ReplicationGroupId'
-    Export:
-      Name: !Sub '${AWS::StackName}-ReplicationGroup.ReplicationGroupId'
