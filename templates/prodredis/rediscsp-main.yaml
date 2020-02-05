@@ -33,6 +33,9 @@ Metadata:
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues: {}
 Parameters:
+  ReplicationGroupId:
+    Description: The name of the Redis replication group
+    Type: String
   ElasticCacheTags:
     Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the keys clustername and namespace. 
     Type: CommaDelimitedList
@@ -301,6 +304,7 @@ Resources:
     Type: 'AWS::ElastiCache::ReplicationGroup'
     Properties:
       AutomaticFailoverEnabled: 'true'
+      ReplicationGroupId: !Ref ReplicationGroupId
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
