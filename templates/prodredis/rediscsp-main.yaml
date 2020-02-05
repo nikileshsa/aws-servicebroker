@@ -33,9 +33,6 @@ Metadata:
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues: {}
 Parameters:
-  ReplicationGroupId:
-    Description: The name of the Redis replication group
-    Type: String    
   ElasticCacheTags:
     Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the keys clustername and namespace. 
     Type: CommaDelimitedList
@@ -303,7 +300,6 @@ Resources:
   ReplicationGroup:
     Type: 'AWS::ElastiCache::ReplicationGroup'
     Properties:
-      ReplicationGroupId: !Ref ReplicationGroupId
       AutomaticFailoverEnabled: 'true'
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       CacheNodeType: !Ref CacheNodeType
@@ -407,20 +403,20 @@ Resources:
       ServiceToken: !GetAtt AWSSBInjectedClientAuthTokenLambda.Arn
       Length: 32    
 Outputs:
-  Host:
-    Description: 'The redis endpoint'
+  host:
+    Description: 'Redis endpoint'
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Address'
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointAddress'
-  Port:
-    Description: 'The redis port'
+  port:
+    Description: 'Redis port'
     Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
-  Password:
+  password:
       Value: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
       Export:
         Name: !Sub '${AWS::StackName}-AuthToken'
-  User:
+  username:
     Description: This is not used for creating the replication group. It is solely present for the dependennt workflows which has only support for username@password semantics
     Value: 'appuser'
