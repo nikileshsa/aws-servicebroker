@@ -17,7 +17,7 @@ Metadata:
       cache environment.
     DocumentationUrl: https://aws.amazon.com/documentation/elasticache/
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow, NumNodeGroups,ReplicationGroupId]
+    UpdatableParameters: [CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow, NumNodeGroups]
     ServicePlans:
       production:
         DisplayName: Production
@@ -33,9 +33,6 @@ Metadata:
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues: {}
 Parameters:
-  ReplicationGroupId:
-    Description: The name of the Redis replication group
-    Type: String
   ElasticCacheTags:
     Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the keys clustername and namespace. 
     Type: CommaDelimitedList
@@ -304,7 +301,6 @@ Resources:
     Type: 'AWS::ElastiCache::ReplicationGroup'
     Properties:
       AutomaticFailoverEnabled: 'true'
-      ReplicationGroupId: !Ref ReplicationGroupId
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       CacheNodeType: !Ref CacheNodeType
       CacheSubnetGroupName: !Ref SubnetGroup
@@ -424,3 +420,6 @@ Outputs:
   username:
     Description: This is not used for creating the replication group. It is solely present for the dependennt workflows which has only support for username@password semantics
     Value: 'appuser'
+  provisionedBy:
+    Description: This is not used for creating the replication group. It is solely present for the dependennt workflows for Dragonfly
+    Value: 'aws-broker'
