@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Cloudformation template for Dragonfly MSK service
+Metadata:
+  AWS::ServiceBroker::Specification:
+    Version: 1.0
+    Tags:
+      - AWS
+      - RDS
+      - MSK
+      - msk
+    Name: awsmsk
+    DisplayName: awsmsk
+    LongDescription: >-
+      MSK long description
+    DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
+    ProviderDisplayName: Amazon Web Services
+    ServicePlans:
+      production:
+        DisplayName: Production
+        Description: Configuration designed for production deployments
+        LongDescription: Creates an Amazon msk optimised for
+          production use
+        Cost: https://aws.amazon.com/elasticache/pricing/
+        ParameterValues: {}
+      custom:
+        DisplayName: Custom
+        Description: Custom Configuration for Advanced deployments
+        LongDescription: Creates an Amazon MSK with custom configuration
+        Cost: https://aws.amazon.com/elasticache/pricing/
+        ParameterValues: {}
+Parameters:
+  SubnetA:
+    Description: >-
+      One of the subnets you would like the Kafka deployment to use.
+      In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'
+  SubnetB:
+    Description: >-
+        One of the subnets you would like the Kafka deployment to use.
+      In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'  
+  SubnetC:
+    Description: >-
+        One of the subnets you would like the Kafka deployment to use.
+        In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'
+Resources:
+  MSKCluster:
+    Type: 'AWS::MSK::Cluster'
+    Properties:
+      BrokerNodeGroupInfo:
+        ClientSubnets:
+          - !Ref SubnetA
+          - !Ref SubnetB
+          - !Ref SubnetC
+        InstanceType: kafka.m5.large
+        StorageInfo:
+          EBSStorageInfo:
+            VolumeSize: 2000
+      ClusterName: MSKCluster
+      EncryptionInfo:
+        EncryptionInTransit:
+          ClientBroker: TLS
+          InCluster: true
+      EnhancedMonitoring: PER_TOPIC_PER_BROKER
+      KafkaVersion: 2.2.1
+      NumberOfBrokerNodes: 3
+Outputs:
+   MSKClusterArn:
+    Description: The Arn for the MSKMMCluster1 MSK cluster
+    Value: !Ref MSKCluster
