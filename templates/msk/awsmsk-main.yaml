@@ -65,8 +65,8 @@ Resources:
       ClusterName: !Ref ClusterName
       EncryptionInfo:
         EncryptionInTransit:
-          ClientBroker: TLS
-          InCluster: true
+          ClientBroker: PLAINTEXT
+          InCluster: false
       EnhancedMonitoring: PER_TOPIC_PER_BROKER
       KafkaVersion: 2.2.1
       NumberOfBrokerNodes: 3
