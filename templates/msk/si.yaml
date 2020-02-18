@@ -7,3 +7,6 @@ spec:
   clusterServiceClassExternalName: awsmsk 
   clusterServicePlanExternalName: production 
   parameters:
+    SubnetA: subnet-0e4181f08ff976280
+    SubnetB: subnet-0d09eee389164464e
+    SubnetC: subnet-0d09eee389164464e
