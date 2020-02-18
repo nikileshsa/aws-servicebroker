@@ -45,6 +45,10 @@ Parameters:
         One of the subnets you would like the Kafka deployment to use.
         In this Dragonfly deployment we only accept 3 subnets for now
     Type: 'AWS::EC2::Subnet::Id'
+  ClusterName:
+    Description: >-
+        Logical cluster name for the MSK to be created
+    Type: 'String'
 Resources:
   MSKCluster:
     Type: 'AWS::MSK::Cluster'
@@ -58,7 +62,7 @@ Resources:
         StorageInfo:
           EBSStorageInfo:
             VolumeSize: 2000
-      ClusterName: MSKCluster
+      ClusterName: !Ref ClusterName
       EncryptionInfo:
         EncryptionInTransit:
           ClientBroker: TLS
@@ -67,6 +71,6 @@ Resources:
       KafkaVersion: 2.2.1
       NumberOfBrokerNodes: 3
 Outputs:
-   MSKClusterArn:
-    Description: The Arn for the MSKMMCluster1 MSK cluster
+  MSKClusterArn:
+    Description: The Arn for MSK cluster
     Value: !Ref MSKCluster
