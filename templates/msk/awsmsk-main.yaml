@@ -37,13 +37,13 @@ Parameters:
     Type: 'AWS::EC2::Subnet::Id'
   SubnetB:
     Description: >-
-        One of the subnets you would like the Kafka deployment to use.
+      One of the subnets you would like the Kafka deployment to use.
       In this Dragonfly deployment we only accept 3 subnets for now
     Type: 'AWS::EC2::Subnet::Id'  
   SubnetC:
     Description: >-
-        One of the subnets you would like the Kafka deployment to use.
-        In this Dragonfly deployment we only accept 3 subnets for now
+      One of the subnets you would like the Kafka deployment to use.
+      In this Dragonfly deployment we only accept 3 subnets for now
     Type: 'AWS::EC2::Subnet::Id'
   ClusterName:
     Description: >-
