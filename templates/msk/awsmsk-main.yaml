@@ -70,7 +70,7 @@ Parameters:
       - kafka.m5.24xlarge
   VolumeSize:
     Description: The size in GiB of the EBS volume for the data drive on each broker node.
-    Type: String
+    Type: Number
     Default: '2000'
     MinValue: '2000'
   JmxExporter:
