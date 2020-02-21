@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  Cloudformation template for Dragonfly MSK service
+  Cloudformation template for Dragonfly AWS Managed Service Kafka service
 Metadata:
   AWS::ServiceBroker::Specification:
     Version: 1.0
@@ -12,7 +12,8 @@ Metadata:
     Name: awsmsk
     DisplayName: awsmsk
     LongDescription: >-
-      MSK long description
+      Amazon Managed Streaming for Apache Kafka (Amazon MSK) is a fully managed service that makes 
+      it easy for you to build and run applications that use Apache Kafka to process streaming data.
     DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
     ProviderDisplayName: Amazon Web Services
     ServicePlans:
@@ -32,17 +33,17 @@ Metadata:
 Parameters:
   SubnetA:
     Description: >-
-      One of the subnets you would like the Kafka deployment to use.
+      One of the three subnets you would like the Kafka deployment to use.
       In this Dragonfly deployment we only accept 3 subnets for now
     Type: 'AWS::EC2::Subnet::Id'
   SubnetB:
     Description: >-
-      One of the subnets you would like the Kafka deployment to use.
+      One of the three subnets you would like the Kafka deployment to use.
       In this Dragonfly deployment we only accept 3 subnets for now
     Type: 'AWS::EC2::Subnet::Id'
   SubnetC:
     Description: >-
-      One of the subnets you would like the Kafka deployment to use.
+      One of the three subnets you would like the Kafka deployment to use.
       In this Dragonfly deployment we only accept 3 subnets for now
     Type: 'AWS::EC2::Subnet::Id'
   ClusterName:
