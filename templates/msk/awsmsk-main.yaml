@@ -8,6 +8,7 @@ Metadata:
       - AWS
       - MSK
       - msk
+      - awsmsk
     Name: awsmsk
     DisplayName: awsmsk
     LongDescription: >-
@@ -54,7 +55,7 @@ Parameters:
     Type: AWS::EC2::SecurityGroup::Id
   VPCID:
     Description: >-
-       VPC ID
+       VPC ID of where the cluster will be deployed
     Type: 'String'
   InstanceType:
     Description: The instance type the Kafka will launch under.
@@ -67,6 +68,35 @@ Parameters:
       - kafka.m5.2xlarge
       - kafka.m5.12xlarge
       - kafka.m5.24xlarge
+  VolumeSize:
+    Description: The size in GiB of the EBS volume for the data drive on each broker node.
+    Type: Integer
+    Default: 2000
+    MinValue: 2000
+  JmxExporter:
+    Description: Indicates whether you want to enable or disable JmxExporter
+    Type: String
+    Default: false
+    AllowedValues: [true, false]
+  NodeExporter:
+    Description: Indicates whether you want to enable or disable the Node Exporter.
+    Type: String
+    Default: false
+    AllowedValues: [true, false]   
+  InCluster:
+    Description: >-
+      When set to true, it indicates that data communication among the broker nodes 
+      of the cluster is encrypted. When set to false, the communication happens in plaintext. 
+    Type: String
+    Default: false
+    AllowedValues: [true, false]
+  ClientBroker:
+    Description: >-
+      Indicates the encryption setting for data in transit between clients and brokers. 
+      The following are the possible values - TLS, TLS_PLAINTEXT,PLAINTEXT.
+    Type: String
+    Default: TLS_PLAINTEXT
+    AllowedValues: [TLS, TLS_PLAINTEXT,PLAINTEXT]   
 Resources:
   MSKSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -101,15 +131,21 @@ Resources:
             - GroupId
         StorageInfo:
           EBSStorageInfo:
-            VolumeSize: 2000
+            VolumeSize: !Ref VolumeSize
       ClusterName: !Ref ClusterName
       EncryptionInfo:
         EncryptionInTransit:
           ClientBroker: PLAINTEXT
-          InCluster: false
+          InCluster: !Ref InCluster
       EnhancedMonitoring: PER_TOPIC_PER_BROKER
       KafkaVersion: 2.2.1
       NumberOfBrokerNodes: 3
+      OpenMonitoring:
+        Prometheus:
+          JmxExporter:
+            EnabledInBroker: !Ref JmxExporter
+          NodeExporter:
+            EnabledInBroker: !Ref NodeExporter      
 Outputs:
   MSKClusterArn:
     Description: The Arn for MSK cluster
