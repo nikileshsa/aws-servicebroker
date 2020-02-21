@@ -6,7 +6,6 @@ Metadata:
     Version: 1.0
     Tags:
       - AWS
-      - RDS
       - MSK
       - msk
     Name: awsmsk
@@ -57,11 +56,22 @@ Parameters:
     Description: >-
        VPC ID
     Type: 'String'
+  InstanceType:
+    Description: The instance type the Kafka will launch under.
+    Type: String
+    Default: kafka.m5.large
+    AllowedValues:
+      - kafka.m5.large
+      - kafka.m5.xlarge
+      - kafka.m5.2xlarge
+      - kafka.m5.2xlarge
+      - kafka.m5.12xlarge
+      - kafka.m5.24xlarge
 Resources:
   MSKSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: Enable SSH access via port 22
+      GroupDescription: Enable access to the MSK cluster
       VpcId: !Ref VPCID
       SecurityGroupIngress:
         - IpProtocol: tcp
@@ -84,7 +94,7 @@ Resources:
           - !Ref SubnetA
           - !Ref SubnetB
           - !Ref SubnetC
-        InstanceType: kafka.m5.large
+        InstanceType: !Ref InstanceType
         SecurityGroups:
           - !GetAtt
             - MSKSecurityGroup

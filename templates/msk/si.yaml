@@ -7,9 +7,9 @@ spec:
   clusterServiceClassExternalName: awsmsk 
   clusterServicePlanExternalName: production 
   parameters:
-    SubnetA: subnet-0e4181f08ff976280
-    SubnetB: subnet-0d09eee389164464e
-    SubnetC: subnet-0d09eee389164464e
+    SubnetA: subnet-00c4b46f45b847fd2 
+    SubnetB: subnet-06aa0a6732bfc2dc7 
+    SubnetC: subnet-038801806dfc1cb67 
     ClusterName: MSKCluster2
     KafkaClientInstanceSecurityGroup: sg-0df3d5903d5382699
     VPCID: vpc-0f59e1f5e6fd508d5
