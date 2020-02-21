@@ -11,3 +11,4 @@ spec:
     SubnetB: subnet-0d09eee389164464e
     SubnetC: subnet-0d09eee389164464e
     ClusterName: MSKCluster2
+    KafkaClientInstanceSecurityGroup: sg-0df3d5903d5382699
