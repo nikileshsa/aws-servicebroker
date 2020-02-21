@@ -39,7 +39,7 @@ Parameters:
     Description: >-
       One of the subnets you would like the Kafka deployment to use.
       In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'  
+    Type: 'AWS::EC2::Subnet::Id'
   SubnetC:
     Description: >-
       One of the subnets you would like the Kafka deployment to use.
@@ -49,7 +49,33 @@ Parameters:
     Description: >-
         Logical cluster name for the MSK to be created
     Type: 'String'
+  KafkaClientInstanceSecurityGroup:
+    Description: >-
+       Security Group id that is associated with the Client pod
+    Type: AWS::EC2::SecurityGroup::Id
+  VPCID:
+    Description: >-
+       VPC ID
+    Type: 'String'
 Resources:
+  MSKSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      VpcId: !Ref VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2181
+          ToPort: 2181
+          SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 9094
+          ToPort: 9094
+          SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 9092
+          ToPort: 9092
+          SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
   MSKCluster:
     Type: 'AWS::MSK::Cluster'
     Properties:
@@ -59,6 +85,10 @@ Resources:
           - !Ref SubnetB
           - !Ref SubnetC
         InstanceType: kafka.m5.large
+        SecurityGroups:
+          - !GetAtt
+            - MSKSecurityGroup
+            - GroupId
         StorageInfo:
           EBSStorageInfo:
             VolumeSize: 2000
@@ -74,3 +104,8 @@ Outputs:
   MSKClusterArn:
     Description: The Arn for MSK cluster
     Value: !Ref MSKCluster
+  MSKSecurityGroupID:
+    Description: The ID of the security group created for the MSK clusters
+    Value: !GetAtt
+      - MSKSecurityGroup
+      - GroupId
