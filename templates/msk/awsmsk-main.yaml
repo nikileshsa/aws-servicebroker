@@ -82,12 +82,12 @@ Parameters:
   JmxExporter:
     Description: Indicates whether you want to enable or disable JmxExporter
     Type: String
-    Default: false
+    Default: true
     AllowedValues: [true, false]
   NodeExporter:
     Description: Indicates whether you want to enable or disable the Node Exporter.
     Type: String
-    Default: false
+    Default: true
     AllowedValues: [true, false]   
   InCluster:
     Description: >-
@@ -124,7 +124,7 @@ Resources:
           SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
   MSKCluster:
     Type: 'AWS::MSK::Cluster'
-    Properties:
+    Properties: 
       BrokerNodeGroupInfo:
         ClientSubnets:
           - !Ref SubnetA
@@ -151,7 +151,60 @@ Resources:
           JmxExporter:
             EnabledInBroker: !Ref JmxExporter
           NodeExporter:
-            EnabledInBroker: !Ref NodeExporter      
+            EnabledInBroker: !Ref NodeExporter
+  GetMskEndpointsFunctionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        -
+          PolicyName: "cfn_utility_get_cidrs"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "kafka:Describe*"
+                  - "kafka:List*"
+                  - "kafka:Get*"
+                Resource: "*"                
+  GetMskEndpointsFunctionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: mskendpoints
+      Role:
+        Fn::GetAtt:
+        - GetMskEndpointsFunctionRole
+        - Arn
+      Code:
+        S3Bucket: aws-sb-artrifacts-nik-dev
+        S3Key: functions/mskendpoints.zip
+      Runtime: go1.x
+      Timeout: '60'
+      Environment: 
+        Variables:
+          clusterarn: !Ref MSKCluster
+  GetMskEndpointsCustomResource:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt GetMskEndpointsFunctionLambda.Arn
+    DependsOn: MSKCluster  
 Outputs:
   MSKClusterArn:
     Description: The Arn for MSK cluster
@@ -161,3 +214,5 @@ Outputs:
     Value: !GetAtt
       - MSKSecurityGroup
       - GroupId
+  Endpoints:
+    Value: !GetAtt  GetMskEndpointsCustomResource.ConnectionString     

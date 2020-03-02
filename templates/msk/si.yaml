@@ -1,8 +1,8 @@
 apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceInstance
 metadata:
-  name: awsmsk-4 
-  namespace: test-aws
+  name: awsmsk-7
+  namespace: awsmsk
 spec:
   clusterServiceClassExternalName: awsmsk 
   clusterServicePlanExternalName: production 
@@ -10,6 +10,6 @@ spec:
     SubnetA: subnet-00c4b46f45b847fd2 
     SubnetB: subnet-06aa0a6732bfc2dc7 
     SubnetC: subnet-038801806dfc1cb67 
-    ClusterName: MSKCluster5
+    ClusterName: MSKCluster7
     KafkaClientInstanceSecurityGroup: sg-0df3d5903d5382699
     VPCID: vpc-0f59e1f5e6fd508d5
