@@ -193,8 +193,8 @@ Resources:
         - GetMskEndpointsFunctionRole
         - Arn
       Code:
-        S3Bucket: aws-sb-artrifacts-nik-dev
-        S3Key: functions/mskendpoints.zip
+        S3Bucket: aws-sb-artrifacts-nik
+        S3Key: functions/msk/mskendpoints.zip
       Runtime: go1.x
       Timeout: '60'
       Environment: 
