@@ -21,7 +21,7 @@ func mskEndPoints(ctx context.Context, event cfn.Event) (physicalResourceID stri
 
 	data = map[string]interface{}{}
 
-	if event.RequestType == "Create" {
+	if event.RequestType == "Create" || event.RequestType == "Update" {
 
 		describeclusterinputarn := &kafka.DescribeClusterInput{
 			ClusterArn: aws.String(clusterarn),
