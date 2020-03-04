@@ -1,0 +1,15 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: awsmsk
+  namespace: test-aws 
+spec:
+  clusterServiceClassExternalName: awsmsk 
+  clusterServicePlanExternalName: production 
+  parameters:
+    SubnetA: subnet-01911349427f4bf0f 
+    SubnetB: subnet-0e29cc2243c107966 
+    SubnetC: subnet-0e29cc2243c107966 
+    ClusterName: MSKCluster
+    KafkaClientInstanceSecurityGroup: sg-0fe6ca613155a1b6a 
+    VPCID: vpc-0aad2dc0759950f59 

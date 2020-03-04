@@ -1,0 +1,10 @@
+apiVersion: servicecatalog.k8s.io/v1beta1
+kind: ServiceInstance
+metadata:
+  name: awsmsk-1 
+  namespace: test-aws
+spec:
+  clusterServiceClassExternalName: msk 
+  clusterServicePlanExternalName: production 
+  parameters:
+    KeyName: raviTest 
