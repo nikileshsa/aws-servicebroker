@@ -16,7 +16,7 @@ Metadata:
       it easy for you to build and run applications that use Apache Kafka to process streaming data.
     DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [InstanceType,NumberOfBrokerNodes,JmxExporter,NodeExporter]
+    UpdatableParameters: [InstanceType,NumberOfBrokerNodes,JmxExporter,NodeExporter,ClusterName]
     ServicePlans:
       production:
         DisplayName: Production
