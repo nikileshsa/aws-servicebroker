@@ -21,7 +21,7 @@ func mskEndPoints(ctx context.Context, event cfn.Event) (physicalResourceID stri
 
 	data = map[string]interface{}{}
 
-	if event.RequestType == "Create" || event.RequestType == "Update" {
+	if event.RequestType == "Create" || event.RequestType == "Update"  {
 
 		describeclusterinputarn := &kafka.DescribeClusterInput{
 			ClusterArn: aws.String(clusterarn),
@@ -43,8 +43,7 @@ func mskEndPoints(ctx context.Context, event cfn.Event) (physicalResourceID stri
 		} else {
 			kafkaConnString = getBootstrapBrokersOutput.GoString()
 		}
-		data["BrokerConnectionString"] = kafkaConnString
-		data["ZookeeperConnectionString"] =  zookeeperConnStr
+		data["ConnectionString"] = "ZookeeperConnStr: " + zookeeperConnStr + " " + kafkaConnString
 	}
 	return
 }
