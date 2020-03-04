@@ -43,7 +43,8 @@ func mskEndPoints(ctx context.Context, event cfn.Event) (physicalResourceID stri
 		} else {
 			kafkaConnString = getBootstrapBrokersOutput.GoString()
 		}
-		data["ConnectionString"] = "ZookeeperConnStr: " + zookeeperConnStr + " " + kafkaConnString
+		data["BrokerConnectionString"] = kafkaConnString
+		data["ZookeeperConnectionString"] =  zookeeperConnStr
 	}
 	return
 }

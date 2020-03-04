@@ -214,5 +214,7 @@ Outputs:
     Value: !GetAtt
       - MSKSecurityGroup
       - GroupId
-  Endpoints:
-    Value: !GetAtt  GetMskEndpointsCustomResource.ConnectionString     
+  KafkaEndpoints:
+    Value: !GetAtt  GetMskEndpointsCustomResource.BrokerConnectionString     
+  ZookeeperEndpoints:
+    Value: !GetAtt  GetMskEndpointsCustomResource.ZookeeperConnectionString     
