@@ -42,7 +42,16 @@ func mskEndPoints(ctx context.Context, event cfn.Event) (physicalResourceID stri
 		if getBootstrapBrokersOutput, err := svc.GetBootstrapBrokers(getBootstrapBrokersInput); err != nil {
 			log.Errorf("Failed to Bootstrapbroker cluster: %v", err)
 		} else {
-			kafkaConnString = getBootstrapBrokersOutput.GoString()
+
+            if *getBootstrapBrokersOutput.BootstrapBrokerString != "" {
+
+				kafkaConnString = *getBootstrapBrokersOutput.BootstrapBrokerString
+
+			} else {
+				kafkaConnString = *getBootstrapBrokersOutput.BootstrapBrokerStringTls
+			}
+
+			
 		}
 		data["ZookeeperEndpoints"] = zookeeperConnStr
 		data["BootstrapServerEndpoints"] = kafkaConnString
