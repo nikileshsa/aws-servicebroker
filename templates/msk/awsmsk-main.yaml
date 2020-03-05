@@ -16,7 +16,7 @@ Metadata:
       it easy for you to build and run applications that use Apache Kafka to process streaming data.
     DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [InstanceType,NumberOfBrokerNodes,JmxExporter,NodeExporter,ClusterName]
+    UpdatableParameters: [NumberOfBrokerNodes,JmxExporter,NodeExporter,ClusterName]
     ServicePlans:
       production:
         DisplayName: Production
@@ -214,5 +214,7 @@ Outputs:
     Value: !GetAtt
       - MSKSecurityGroup
       - GroupId
-  Endpoints:
-    Value: !GetAtt  GetMskEndpointsCustomResource.ConnectionString     
+  ZKEndpoints:
+    Value: !GetAtt  GetMskEndpointsCustomResource.ZookeeperEndpoints     
+  BootstrapServerEndpoints:
+    Value: !GetAtt  GetMskEndpointsCustomResource.BootstrapServerEndpoints     

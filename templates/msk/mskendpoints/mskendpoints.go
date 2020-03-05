@@ -17,7 +17,6 @@ var kafkaConnString, zookeeperConnStr string
 
 func mskEndPoints(ctx context.Context, event cfn.Event) (physicalResourceID string, data map[string]interface{}, err error) {
 
-	log.Infof("event.ResourceProperties %v",lambdacontext.LogStreamName)
 	if event.ResourceProperties["PhysicalResourceID"] == nil {
 	event.ResourceProperties["PhysicalResourceID"] = lambdacontext.LogStreamName
 	}
@@ -45,7 +44,8 @@ func mskEndPoints(ctx context.Context, event cfn.Event) (physicalResourceID stri
 		} else {
 			kafkaConnString = getBootstrapBrokersOutput.GoString()
 		}
-		data["ConnectionString"] = "ZookeeperConnStr: " + zookeeperConnStr + " " + kafkaConnString
+		data["ZookeeperEndpoints"] = zookeeperConnStr
+		data["BootstrapServerEndpoints"] = kafkaConnString
 	}
 	return
 }
