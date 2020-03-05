@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/aws/aws-lambda-go/cfn"
 	"github.com/aws/aws-lambda-go/lambda"
-	"github.com/aws/aws-lambda-go/lambdacontext"
+	// "github.com/aws/aws-lambda-go/lambdacontext"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kafka"
@@ -17,7 +17,7 @@ var kafkaConnString, zookeeperConnStr string
 
 func mskEndPoints(ctx context.Context, event cfn.Event) (physicalResourceID string, data map[string]interface{}, err error) {
 
-	event.ResourceProperties["PhysicalResourceID"] = lambdacontext.LogStreamName
+	 event.ResourceProperties["PhysicalResourceID"] = "1234567"
 
 	data = map[string]interface{}{}
 
