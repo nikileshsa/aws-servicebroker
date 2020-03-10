@@ -16,7 +16,7 @@ Metadata:
       it easy for you to build and run applications that use Apache Kafka to process streaming data.
     DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [NumberOfBrokerNodes,JmxExporter,NodeExporter,ClusterName]
+    UpdatableParameters: [NumberOfBrokerNodes,JmxExporter,NodeExporter]
     ServicePlans:
       production:
         DisplayName: Production
@@ -33,16 +33,6 @@ Metadata:
         ParameterValues: {}
 Parameters:
   SubnetA:
-    Description: >-
-      One of the three subnets you would like the Kafka deployment to use.
-      In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'
-  SubnetB:
-    Description: >-
-      One of the three subnets you would like the Kafka deployment to use.
-      In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'
-  SubnetC:
     Description: >-
       One of the three subnets you would like the Kafka deployment to use.
       In this Dragonfly deployment we only accept 3 subnets for now
@@ -78,7 +68,7 @@ Parameters:
   NumberOfBrokerNodes:
     Description: The number of broker nodes you want in the Amazon MSK cluster. You can submit an update to increase the number of broker nodes in a cluster.
     Type: Number
-    Default: 3
+    Default: 1
   JmxExporter:
     Description: Indicates whether you want to enable or disable JmxExporter
     Type: String
@@ -128,8 +118,6 @@ Resources:
       BrokerNodeGroupInfo:
         ClientSubnets:
           - !Ref SubnetA
-          - !Ref SubnetB
-          - !Ref SubnetC
         InstanceType: !Ref InstanceType
         SecurityGroups:
           - !GetAtt
