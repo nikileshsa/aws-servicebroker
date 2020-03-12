@@ -147,7 +147,7 @@ Resources:
       BrokerNodeGroupInfo:
         ClientSubnets:
           - !Select [ "0", !Ref Subnets]
-          - !Ref [ "1", !Ref Subnets]
+          - !Select [ "1", !Ref Subnets]
           - !If
             - 3az
             - !Ref [ "2", !Ref Subnets]
