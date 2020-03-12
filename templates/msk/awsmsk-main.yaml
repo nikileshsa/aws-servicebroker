@@ -31,22 +31,26 @@ Metadata:
         LongDescription: Creates an Amazon MSK with custom configuration
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues: {}
+      development:
+        DisplayName: Development
+        Description: Plan used by developers
+        LongDescription: Creates an Amazon MSK with developer friendly configuration
+        Cost: https://aws.amazon.com/elasticache/pricing/
+        ParameterValues: {}
 Parameters:
-  SubnetA:
+  Subnets:
     Description: >-
       One of the three subnets you would like the Kafka deployment to use.
       In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'
-  SubnetB:
-    Description: >-
-      One of the three subnets you would like the Kafka deployment to use.
-      In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'
-  SubnetC:
-    Description: >-
-      One of the three subnets you would like the Kafka deployment to use.
-      In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'
+    Type: 'List<AWS::EC2::Subnet::Id>'
+  NumberOfAvailabilityZones:
+    Description: Quantity of subnets to use, if selecting more than 2 the region this
+      stack is in must have at least that many Availability Zones
+    Type: String
+    Default: '3'
+    AllowedValues:
+    - '2'
+    - '3'
   ClusterName:
     Description: >-
         Logical cluster name for the MSK to be created
@@ -55,7 +59,7 @@ Parameters:
     Description: >-
        Security Group id that is associated with the Client pod
     Type: AWS::EC2::SecurityGroup::Id
-  VPCID:
+  VpcId:
     Description: >-
        VPC ID of where the cluster will be deployed
     Type: 'String'
@@ -102,13 +106,28 @@ Parameters:
       The following are the possible values - TLS, TLS_PLAINTEXT,PLAINTEXT.
     Type: String
     Default: TLS_PLAINTEXT
-    AllowedValues: [TLS, TLS_PLAINTEXT,PLAINTEXT]   
+    AllowedValues: [TLS, TLS_PLAINTEXT,PLAINTEXT]
+  CidrBlocks:
+    Description: comma seperated list of CIDR blocks to place Kafka into, must be the
+      same quantity as specified in NumberOfAvailabilityZones
+    Type: CommaDelimitedList
+    Default: Auto
+  CidrSize:
+    Description: Size of Cidr block to allocate if CidrBlocks is set to Auto.
+    Type: String
+    Default: '27'
+Conditions:
+  3az:
+    !Or
+    - !Equals
+      - !Ref NumberOfAvailabilityZones
+      - '3'
 Resources:
   MSKSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       GroupDescription: Enable access to the MSK cluster
-      VpcId: !Ref VPCID
+      VpcId: !Ref VpcId
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: 2181
@@ -127,9 +146,12 @@ Resources:
     Properties: 
       BrokerNodeGroupInfo:
         ClientSubnets:
-          - !Ref SubnetA
-          - !Ref SubnetB
-          - !Ref SubnetC
+          - !Select [ "0", !Ref Subnets]
+          - !Ref [ "1", !Ref Subnets]
+          - !If
+            - 3az
+            - !Ref [ "2", !Ref Subnets]
+            - !Ref AWS::NoValue  
         InstanceType: !Ref InstanceType
         SecurityGroups:
           - !GetAtt
@@ -204,7 +226,7 @@ Resources:
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: !GetAtt GetMskEndpointsFunctionLambda.Arn
-    DependsOn: MSKCluster  
+    DependsOn: MSKCluster
 Outputs:
   MSKClusterArn:
     Description: The Arn for MSK cluster
