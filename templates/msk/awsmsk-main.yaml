@@ -36,7 +36,9 @@ Metadata:
         Description: Plan used by developers
         LongDescription: Creates an Amazon MSK with developer friendly configuration
         Cost: https://aws.amazon.com/elasticache/pricing/
-        ParameterValues: {}
+        ParameterValues:
+          NumberOfAvailabilityZones: 2
+          NumberOfBrokerNodes: 2
 Parameters:
   Subnets:
     Description: >-
