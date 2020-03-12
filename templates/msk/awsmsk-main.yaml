@@ -116,11 +116,6 @@ Parameters:
     Description: Size of Cidr block to allocate if CidrBlocks is set to Auto.
     Type: String
     Default: '27'
-Conditions:
-  3az:
-    - !Equals
-      - !Ref NumberOfAvailabilityZones
-      - '3'
 Resources:
   MSKSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
