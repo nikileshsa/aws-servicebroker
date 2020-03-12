@@ -24,7 +24,8 @@ Metadata:
         LongDescription: Creates an Amazon msk optimised for
           production use
         Cost: https://aws.amazon.com/elasticache/pricing/
-        ParameterValues: {}
+        ParameterValues: 
+          NumberOfBrokerNodes: 3
       custom:
         DisplayName: Custom
         Description: Custom Configuration for Advanced deployments
@@ -37,22 +38,12 @@ Metadata:
         LongDescription: Creates an Amazon MSK with developer friendly configuration
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues:
-          NumberOfAvailabilityZones: 2
           NumberOfBrokerNodes: 2
 Parameters:
   Subnets:
     Description: >-
-      One of the three subnets you would like the Kafka deployment to use.
-      In this Dragonfly deployment we only accept 3 subnets for now
+      List of subnets that need to be used for this cluster creation. It must be equal to the number of broker nodes for cluster creation
     Type: 'List<AWS::EC2::Subnet::Id>'
-  NumberOfAvailabilityZones:
-    Description: Quantity of subnets to use, if selecting more than 2 the region this
-      stack is in must have at least that many Availability Zones
-    Type: String
-    Default: '3'
-    AllowedValues:
-    - '2'
-    - '3'
   ClusterName:
     Description: >-
         Logical cluster name for the MSK to be created
