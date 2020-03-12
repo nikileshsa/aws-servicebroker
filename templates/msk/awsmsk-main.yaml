@@ -144,13 +144,7 @@ Resources:
     Type: 'AWS::MSK::Cluster'
     Properties: 
       BrokerNodeGroupInfo:
-        ClientSubnets:
-          - !Select [ "0", !Ref Subnets]
-          - !Select [ "1", !Ref Subnets]
-          - !If
-            - 3az
-            - !Ref [ "2", !Ref Subnets]
-            - !Ref AWS::NoValue  
+        ClientSubnets: !Ref Subnets
         InstanceType: !Ref InstanceType
         SecurityGroups:
           - !GetAtt
