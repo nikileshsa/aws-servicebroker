@@ -118,7 +118,6 @@ Parameters:
     Default: '27'
 Conditions:
   3az:
-    !Or
     - !Equals
       - !Ref NumberOfAvailabilityZones
       - '3'
