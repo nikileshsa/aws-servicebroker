@@ -24,8 +24,7 @@ Metadata:
         LongDescription: Creates an Amazon msk optimised for
           production use
         Cost: https://aws.amazon.com/elasticache/pricing/
-        ParameterValues: 
-          NumberOfBrokerNodes: 3
+        ParameterValues: {}
       custom:
         DisplayName: Custom
         Description: Custom Configuration for Advanced deployments
@@ -37,8 +36,7 @@ Metadata:
         Description: Plan used by developers
         LongDescription: Creates an Amazon MSK with developer friendly configuration
         Cost: https://aws.amazon.com/elasticache/pricing/
-        ParameterValues:
-          NumberOfBrokerNodes: 2
+        ParameterValues: {}
 Parameters:
   Subnets:
     Description: >-
