@@ -17,6 +17,7 @@ Metadata:
     DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
     ProviderDisplayName: Amazon Web Services
     UpdatableParameters: [NumberOfBrokerNodes,JmxExporter,NodeExporter,ClusterName]
+    plan_updateable: true
     ServicePlans:
       production:
         DisplayName: Production
