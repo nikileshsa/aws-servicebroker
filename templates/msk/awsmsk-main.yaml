@@ -62,6 +62,7 @@ Parameters:
     Type: String
     Default: kafka.m5.large
     AllowedValues:
+      - kafka.t3.small
       - kafka.m5.large
       - kafka.m5.xlarge
       - kafka.m5.2xlarge

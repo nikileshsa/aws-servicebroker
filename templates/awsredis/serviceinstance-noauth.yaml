@@ -2,15 +2,16 @@ apiVersion: servicecatalog.k8s.io/v1beta1
 kind: ServiceInstance
 metadata:
   name: aws-redis
-  namespace: test-redis
+  namespace: ndp
 spec:
   clusterServiceClassExternalName: awsredis 
   clusterServicePlanExternalName: production 
   parameters:
-    VpcId: vpc-0f59e1f5e6fd508d5 
-    SubnetA: subnet-00c4b46f45b847fd2 
-    SubnetB: subnet-06aa0a6732bfc2dc7 
-    SubnetC: subnet-038801806dfc1cb67
+    VpcId: vpc-0eb894c1829fb1725 
+    SubnetA: subnet-0ddc850a0f031ba02 
+    SubnetB: subnet-06b4d8488b89f91d0 
+    SubnetC: subnet-090aeec2e1439c323 
     TransitEncryptionEnabled: true 	
     AtRestEncryptionEnabled: true 
-    ElasticCacheTags: testredis
+    ElasticCacheTags: testredis,ndp
+    CacheNodeType: cache.t3.micro
