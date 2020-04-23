@@ -16,8 +16,7 @@ Metadata:
       it easy for you to build and run applications that use Apache Kafka to process streaming data.
     DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [NumberOfBrokerNodes,JmxExporter,NodeExporter,ClusterName]
-    planUpdatable: true
+    UpdatableParameters: [NumberOfBrokerNodes,JmxExporter,NodeExporter]
     ServicePlans:
       production:
         DisplayName: Production
@@ -25,18 +24,11 @@ Metadata:
         LongDescription: Creates an Amazon msk optimised for
           production use
         Cost: https://aws.amazon.com/elasticache/pricing/
-        ParameterValues: 
-          NumberOfBrokerNodes: 3
-      custom:
-        DisplayName: Custom
-        Description: Custom Configuration for Advanced deployments
-        LongDescription: Creates an Amazon MSK with custom configuration
-        Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues: {}
-      development:
-        DisplayName: Development
-        Description: Plan used by developers
-        LongDescription: Creates an Amazon MSK with developer friendly configuration
+      integration:
+        DisplayName: Integration
+        Description: Plan used for integration
+        LongDescription: Creates an Amazon MSK for integration workflows
         Cost: https://aws.amazon.com/elasticache/pricing/
         ParameterValues:
           NumberOfBrokerNodes: 2
@@ -62,7 +54,6 @@ Parameters:
     Type: String
     Default: kafka.m5.large
     AllowedValues:
-      - kafka.t3.small
       - kafka.m5.large
       - kafka.m5.xlarge
       - kafka.m5.2xlarge
@@ -102,15 +93,6 @@ Parameters:
     Type: String
     Default: TLS_PLAINTEXT
     AllowedValues: [TLS, TLS_PLAINTEXT,PLAINTEXT]
-  CidrBlocks:
-    Description: comma seperated list of CIDR blocks to place Kafka into, must be the
-      same quantity as specified in NumberOfAvailabilityZones
-    Type: CommaDelimitedList
-    Default: Auto
-  CidrSize:
-    Description: Size of Cidr block to allocate if CidrBlocks is set to Auto.
-    Type: String
-    Default: '27'
 Resources:
   MSKSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -157,6 +139,9 @@ Resources:
             EnabledInBroker: !Ref JmxExporter
           NodeExporter:
             EnabledInBroker: !Ref NodeExporter
+      CloudWatchLogs:
+        Enabled: true
+        LogGroup: !Ref MSKLogGroup
   GetMskEndpointsFunctionRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -210,6 +195,11 @@ Resources:
     Properties:
       ServiceToken: !GetAtt GetMskEndpointsFunctionLambda.Arn
     DependsOn: MSKCluster
+  MSKLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties: 
+      LogGroupName: MSKlogs
+      RetentionInDays: 10
 Outputs:
   MSKClusterArn:
     Description: The Arn for MSK cluster
@@ -220,6 +210,11 @@ Outputs:
       - MSKSecurityGroup
       - GroupId
   ZKEndpoints:
+    Description: Zookeeper endpoints for AWS MSK
     Value: !GetAtt  GetMskEndpointsCustomResource.ZookeeperEndpoints     
-  BootstrapServerEndpoints:
-    Value: !GetAtt  GetMskEndpointsCustomResource.BootstrapServerEndpoints     
+  Host:
+    Description: AWS MSK Bootstrap server Broker endpoints
+    Value: !GetAtt  GetMskEndpointsCustomResource.BootstrapServerEndpoints
+  Port:
+    Description: Dummy port for downstream consumption. Solely here to preserve host port semantics
+    Value: 'xxxx'
