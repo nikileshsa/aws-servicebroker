@@ -6,7 +6,10 @@ Metadata:
   AWS::ServiceBroker::Specification:
     Version: 1.0
     Tags:
-      - version=awsredis-betav2
+      - awsredis-betav2
+      - AWS
+      - awsredis
+      - redis
     Name: awsredis
     DisplayName: Dragonfly ElasticRedis
     LongDescription: Dragonfly  ElasticRedis is a web service that leverages AWS ElasticCache to set
@@ -34,6 +37,9 @@ Metadata:
           ReplicasPerNodeGroup: 0
           NumNodeGroups: 1
 Parameters:
+  RedisParameterGroup:
+    Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the key clustername. 
+    Type: String    
   EKSClusterName:
     Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the key clustername. 
     Type: CommaDelimitedList
@@ -175,9 +181,6 @@ Parameters:
   AtRestEncryptionEnabled:  
     Type: String
     Default: 'true'
-  NotifyKeySpaceEvents:
-    Type: String
-    Default: ''
   AllowVersionUpgrade:
     Description: Indicates that minor engine upgrades will be applied automatically
       to the cache cluster during the maintenance window. The default value is true.
@@ -186,97 +189,6 @@ Parameters:
     AllowedValues:
     - 'True'
     - 'False'
-  ActiveDefrag:
-    Type: String
-    Default: 'no'
-    AllowedValues:
-      - 'yes'
-      - 'no'
-  ActiveDefragCycleMax:
-    Type: Number
-    Default: '75'
-    MinValue: '1'
-    MaxValue: '75'
-  ActiveDefragCycleMin:
-    Type: Number
-    Default: '25'
-    MinValue: '1'
-    MaxValue: '75'
-  ActiveDefragIgnoreBytes:
-    Type: Number
-    Default: '104857600'
-    MinValue: '1048576'
-  ActiveDefragThresholdLower:
-    Type: Number
-    Default: '10'
-    MinValue: '1'
-    MaxValue: '100'
-  ActiveDefragThresholdUpper:
-    Type: Number
-    Default: '1'
-    MinValue: '1'
-    MaxValue: '100'
-  CloseOnReplicaWrite:
-    Type: String
-    Default: 'yes'
-    AllowedValues:
-      - 'yes'
-      - 'no'
-  ClusterRequireFullCoverage:
-    Type: String
-    Default: 'no'
-    AllowedValues:
-      - 'yes'
-      - 'no'
-  MaxmemoryPolicy:
-    Type: String
-    Default: 'volatile-lru'
-    AllowedValues:
-      - 'volatile-lru'
-      - 'allkeys-lru'
-      - 'volatile-lfu'
-      - 'allkeys-lfu'
-      - 'volatile-random'
-      - 'allkeys-random'
-      - 'volatile-ttl'
-      - 'noeviction'
-  MaxmemorySamples:
-    Type: Number
-    Default: '3'
-    MinValue: '1'
-  MinReplicasMaxLag:
-    Type: Number
-    Default: '10'
-    MinValue: '0'
-  MinReplicasToWrite:
-    Type: Number
-    Default: '0'
-    MinValue: '0'
-  ProtoMaxBulkLen:
-    Type: Number
-    Default: '536870912'
-    MinValue: '1048576'
-    MaxValue: '536870912'
-  ReplBacklogSize:
-    Type: Number
-    Default: '1048576'
-    MinValue: '16384'
-  ReplBacklogTtl:
-    Type: Number
-    Default: '3600'
-    MinValue: '0'
-  ReservedMemoryPercent:
-    Type: Number
-    Default: '25'
-    MinValue: '0'
-    MaxValue: '100'
-  TcpKeepalive:
-    Type: Number
-    Default: '300'
-    MinValue: '0'
-  Timeout:
-    Type: Number
-    Default: '0'
 Conditions:
   AutoAuthToken:
     !Equals
@@ -336,32 +248,6 @@ Resources:
           Value: !Select [ 0, !Ref EKSClusterName ]
     UpdatePolicy:
       UseOnlineResharding: true
-  RedisParameterGroup:
-    Type: 'AWS::ElastiCache::ParameterGroup'
-    Properties:
-      Description: Dragonfly Redis Param Group
-      CacheParameterGroupFamily: redis5.0
-      Properties:
-        cluster-enabled: 'yes'
-        notify-keyspace-events: !Ref NotifyKeySpaceEvents
-        activedefrag: !Ref ActiveDefrag
-        active-defrag-cycle-max: !Ref ActiveDefragCycleMax
-        active-defrag-cycle-min: !Ref ActiveDefragCycleMin
-        active-defrag-ignore-bytes: !Ref ActiveDefragIgnoreBytes
-        active-defrag-threshold-lower: !Ref ActiveDefragThresholdLower
-        active-defrag-threshold-upper: !Ref ActiveDefragThresholdUpper
-        close-on-replica-write: !Ref CloseOnReplicaWrite
-        cluster-require-full-coverage: !Ref ClusterRequireFullCoverage
-        maxmemory-policy: !Ref MaxmemoryPolicy
-        maxmemory-samples: !Ref MaxmemorySamples
-        min-replicas-max-lag: !Ref MinReplicasMaxLag
-        min-replicas-to-write: !Ref MinReplicasToWrite
-        proto-max-bulk-len: !Ref ProtoMaxBulkLen
-        repl-backlog-size: !Ref ReplBacklogSize
-        repl-backlog-ttl: !Ref ReplBacklogTtl
-        reserved-memory-percent: !Ref ReservedMemoryPercent
-        tcp-keepalive: !Ref TcpKeepalive
-        timeout: !Ref Timeout
   AWSSBInjectedClientAuthTokenRole:
     Type: AWS::IAM::Role
     Properties:
@@ -395,7 +281,7 @@ Resources:
         - AWSSBInjectedClientAuthTokenRole
         - Arn
       Code:
-        S3Bucket: aws-sb-artrifacts-prod
+        S3Bucket: dflyawsservicebroker-tesseractinternal
         S3Key: functions/generate_password/awsredis_gentoken_lambda_func.zip
       Runtime: python3.6
       Timeout: '60'
