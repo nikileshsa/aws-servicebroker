@@ -33,6 +33,9 @@ Metadata:
         ParameterValues:
           NumberOfBrokerNodes: 2
 Parameters:
+  ConfigurationArn:
+    Description: AWS MSK kafka configuration arn
+    Type: 'String'  
   Subnets:
     Description: >-
       List of subnets that need to be used for this cluster creation. It must be equal to the number of broker nodes for cluster creation
@@ -114,7 +117,10 @@ Resources:
           SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
   MSKCluster:
     Type: 'AWS::MSK::Cluster'
-    Properties: 
+    Properties:
+      ConfigurationInfo:
+        Arn: !Ref ConfigurationArn
+        Revision: 1    
       BrokerNodeGroupInfo:
         ClientSubnets: !Ref Subnets
         InstanceType: !Ref InstanceType
