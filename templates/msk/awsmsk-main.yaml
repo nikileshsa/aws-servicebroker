@@ -1,0 +1,212 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  Cloudformation template for Dragonfly AWS Managed Service Kafka service
+Metadata:
+  AWS::ServiceBroker::Specification:
+    Version: 1.0
+    Tags:
+      - AWS
+      - MSK
+      - msk
+      - awsmsk
+    Name: awsmsk
+    DisplayName: awsmsk
+    LongDescription: >-
+      Amazon Managed Streaming for Apache Kafka (Amazon MSK) is a fully managed service that makes 
+      it easy for you to build and run applications that use Apache Kafka to process streaming data.
+    DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
+    ProviderDisplayName: Amazon Web Services
+    UpdatableParameters: [NumberOfBrokerNodes,JmxExporter,NodeExporter]
+    ServicePlans:
+      production:
+        DisplayName: Production
+        Description: Configuration designed for production deployments
+        LongDescription: Creates an Amazon msk optimised for
+          production use
+        Cost: https://aws.amazon.com/elasticache/pricing/
+        ParameterValues: {}
+      integration:
+        DisplayName: Integration
+        Description: Plan used for integration
+        LongDescription: Creates an Amazon MSK for integration workflows
+        Cost: https://aws.amazon.com/elasticache/pricing/
+        ParameterValues:
+          NumberOfBrokerNodes: 2
+Parameters:
+  Subnets:
+    Description: >-
+      List of subnets that need to be used for this cluster creation. It must be equal to the number of broker nodes for cluster creation
+    Type: 'List<AWS::EC2::Subnet::Id>'
+  ClusterName:
+    Description: >-
+        Logical cluster name for the MSK to be created
+    Type: 'String'
+  KafkaClientInstanceSecurityGroup:
+    Description: >-
+       Security Group id that is associated with the Client pod
+    Type: AWS::EC2::SecurityGroup::Id
+  VpcId:
+    Description: >-
+       VPC ID of where the cluster will be deployed
+    Type: 'String'
+  InstanceType:
+    Description: The instance type the Kafka will launch under.
+    Type: String
+    Default: kafka.m5.large
+    AllowedValues:
+      - kafka.m5.large
+      - kafka.m5.xlarge
+      - kafka.m5.2xlarge
+      - kafka.m5.2xlarge
+      - kafka.m5.12xlarge
+      - kafka.m5.24xlarge
+  VolumeSize:
+    Description: The size in GiB of the EBS volume for the data drive on each broker node.
+    Type: Number
+    Default: 2000
+    MinValue: 2000
+  NumberOfBrokerNodes:
+    Description: The number of broker nodes you want in the Amazon MSK cluster. You can submit an update to increase the number of broker nodes in a cluster.
+    Type: Number
+    Default: 3
+  JmxExporter:
+    Description: Indicates whether you want to enable or disable JmxExporter
+    Type: String
+    Default: true
+    AllowedValues: [true, false]
+  NodeExporter:
+    Description: Indicates whether you want to enable or disable the Node Exporter.
+    Type: String
+    Default: true
+    AllowedValues: [true, false]   
+  InCluster:
+    Description: >-
+      When set to true, it indicates that data communication among the broker nodes 
+      of the cluster is encrypted. When set to false, the communication happens in plaintext. 
+    Type: String
+    Default: false
+    AllowedValues: [true, false]
+  ClientBroker:
+    Description: >-
+      Indicates the encryption setting for data in transit between clients and brokers. 
+      The following are the possible values - TLS, TLS_PLAINTEXT,PLAINTEXT.
+    Type: String
+    Default: TLS_PLAINTEXT
+    AllowedValues: [TLS, TLS_PLAINTEXT,PLAINTEXT]
+Resources:
+  MSKSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Enable access to the MSK cluster
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 2181
+          ToPort: 2181
+          SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 9094
+          ToPort: 9094
+          SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
+        - IpProtocol: tcp
+          FromPort: 9092
+          ToPort: 9092
+          SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
+  MSKCluster:
+    Type: 'AWS::MSK::Cluster'
+    Properties: 
+      BrokerNodeGroupInfo:
+        ClientSubnets: !Ref Subnets
+        InstanceType: !Ref InstanceType
+        SecurityGroups:
+          - !GetAtt
+            - MSKSecurityGroup
+            - GroupId
+        StorageInfo:
+          EBSStorageInfo:
+            VolumeSize: !Ref VolumeSize
+      ClusterName: !Ref ClusterName
+      EncryptionInfo:
+        EncryptionInTransit:
+          ClientBroker: PLAINTEXT
+          InCluster: !Ref InCluster
+      EnhancedMonitoring: PER_TOPIC_PER_BROKER
+      KafkaVersion: 2.2.1
+      NumberOfBrokerNodes: !Ref NumberOfBrokerNodes
+      OpenMonitoring:
+        Prometheus:
+          JmxExporter:
+            EnabledInBroker: !Ref JmxExporter
+          NodeExporter:
+            EnabledInBroker: !Ref NodeExporter
+  GetMskEndpointsFunctionRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Path: "/"
+      Policies:
+        -
+          PolicyName: "cfn_utility_get_cidrs"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "kafka:Describe*"
+                  - "kafka:List*"
+                  - "kafka:Get*"
+                Resource: "*"                
+  GetMskEndpointsFunctionLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: mskendpoints
+      Role:
+        Fn::GetAtt:
+        - GetMskEndpointsFunctionRole
+        - Arn
+      Code:
+        S3Bucket: aws-sb-artrifacts-nik
+        S3Key: functions/msk/mskendpoints.zip
+      Runtime: go1.x
+      Timeout: '60'
+      Environment: 
+        Variables:
+          clusterarn: !Ref MSKCluster
+  GetMskEndpointsCustomResource:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt GetMskEndpointsFunctionLambda.Arn
+    DependsOn: MSKCluster
+Outputs:
+  MSKClusterArn:
+    Description: The Arn for MSK cluster
+    Value: !Ref MSKCluster
+  MSKSecurityGroupID:
+    Description: The ID of the security group created for the MSK clusters
+    Value: !GetAtt
+      - MSKSecurityGroup
+      - GroupId
+  ZKEndpoints:
+    Description: Zookeeper endpoints for AWS MSK
+    Value: !GetAtt  GetMskEndpointsCustomResource.ZookeeperEndpoints     
+  Host:
+    Description: AWS MSK Bootstrap server Broker endpoints
+    Value: !GetAtt  GetMskEndpointsCustomResource.BootstrapServerEndpoints
+  Port:
+    Description: Dummy port for downstream consumption. Solely here to preserve host port semantics
+    Value: 'xxxx'
