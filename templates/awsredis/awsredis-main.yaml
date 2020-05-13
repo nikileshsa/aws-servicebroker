@@ -215,7 +215,7 @@ Resources:
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       NotificationTopicArn: !Ref NotificationTopicArn
       CacheNodeType: !Ref CacheNodeType
-      CacheSubnetGroupName: !Ref SubnetGroup
+      CacheSubnetGroupName: !Ref SubnetGroupName
       CacheParameterGroupName: !Ref RedisParameterGroup
       Engine: redis
       EngineVersion: !Ref EngineVersion
