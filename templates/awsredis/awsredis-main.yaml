@@ -37,9 +37,6 @@ Metadata:
           ReplicasPerNodeGroup: 0
           NumNodeGroups: 1
 Parameters:
-  SubnetGroupName:
-    Description: Cache Subnet group name. Assumes the subnet group is created externally and the name of subnet group is passed as parameter
-    Type: String
   RedisParameterGroup:
     Description: Custom Redis parameter group name
     Type: String    
@@ -163,21 +160,6 @@ Parameters:
     ConstraintDescription: >-
       must be a valid timestamp range with day of week, for example
       sun:22:00-sun:23:30
-  SubnetA:
-    Description: >-
-      One of the subnets you would like the ReplicationGroup to be created in.
-      In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'
-  SubnetB:
-    Description: >-
-      One of the subnets you would like the ReplicationGroup to be created in.
-      In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'  
-  SubnetC:
-    Description: >-
-        One of the subnets you would like the ReplicationGroup to be created in.
-        In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'  
   TransitEncryptionEnabled:
     Type: String
     Default: 'true'
@@ -215,7 +197,6 @@ Resources:
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       NotificationTopicArn: !Ref NotificationTopicArn
       CacheNodeType: !Ref CacheNodeType
-      CacheSubnetGroupName: !Ref SubnetGroupName
       CacheParameterGroupName: !Ref RedisParameterGroup
       Engine: redis
       EngineVersion: !Ref EngineVersion
