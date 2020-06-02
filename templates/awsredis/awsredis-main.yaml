@@ -160,6 +160,21 @@ Parameters:
     ConstraintDescription: >-
       must be a valid timestamp range with day of week, for example
       sun:22:00-sun:23:30
+  SubnetA:
+    Description: >-
+      One of the subnets you would like the ReplicationGroup to be created in.
+      In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'
+  SubnetB:
+    Description: >-
+      One of the subnets you would like the ReplicationGroup to be created in.
+      In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'  
+  SubnetC:
+    Description: >-
+        One of the subnets you would like the ReplicationGroup to be created in.
+        In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'  
   TransitEncryptionEnabled:
     Type: String
     Default: 'true'
@@ -190,6 +205,14 @@ Resources:
           ToPort: !Ref RedisPort
           IpProtocol: tcp
       VpcId: !Ref VpcId
+  SubnetGroup:
+    Type: 'AWS::ElastiCache::SubnetGroup'
+    Properties:
+      Description: Subnet Group for Dragonfly deployment Replication Group
+      SubnetIds:
+        - !Ref SubnetA
+        - !Ref SubnetB
+        - !Ref SubnetC
   ReplicationGroup:
     Type: 'AWS::ElastiCache::ReplicationGroup'
     Properties:
@@ -197,6 +220,7 @@ Resources:
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       NotificationTopicArn: !Ref NotificationTopicArn
       CacheNodeType: !Ref CacheNodeType
+      CacheSubnetGroupName: !Ref SubnetGroup
       CacheParameterGroupName: !Ref RedisParameterGroup
       Engine: redis
       EngineVersion: !Ref EngineVersion
