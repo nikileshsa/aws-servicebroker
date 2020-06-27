@@ -99,6 +99,13 @@ Parameters:
     Default: TLS_PLAINTEXT
     AllowedValues: [TLS, TLS_PLAINTEXT,PLAINTEXT]
 Resources:
+  MSKLogGroup:
+    Type: 'AWS::Logs::LogGroup'
+    Properties:
+      LogGroupName: !Join
+      - ''
+      - - 'Dragonfly-'
+        - !Ref ClusterName
   MSKSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -147,6 +154,10 @@ Resources:
             EnabledInBroker: !Ref JmxExporter
           NodeExporter:
             EnabledInBroker: !Ref NodeExporter
+      CloudWatchLogs:
+        Properties:
+          Enabled: true
+          LogGroup: !Ref MSKLogGroup
   GetMskEndpointsFunctionRole:
     Type: "AWS::IAM::Role"
     Properties:
