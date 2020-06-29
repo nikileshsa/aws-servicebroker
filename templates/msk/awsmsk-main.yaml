@@ -12,11 +12,11 @@ Metadata:
     Name: awsmsk
     DisplayName: awsmsk
     LongDescription: >-
-      Amazon Managed Streaming for Apache Kafka (Amazon MSK) is a fully managed service that makes 
+      Amazon Managed Streaming for Apache Kafka (Amazon MSK) is a fully managed service that makes
       it easy for you to build and run applications that use Apache Kafka to process streaming data.
     DocumentationUrl: https://docs.aws.amazon.com/AmazonElastiCache/latest/red-ug/GettingStarted.html
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [NumberOfBrokerNodes,JmxExporter,NodeExporter]
+    UpdatableParameters: [VolumeSize,CloudWatchLogRetentionPeriod,NumberOfBrokerNodes,JmxExporter,NodeExporter]
     ServicePlans:
       production:
         DisplayName: Production
@@ -34,9 +34,14 @@ Metadata:
           NumberOfBrokerNodes: 2
           InstanceType: kafka.t3.small
 Parameters:
+  CloudWatchLogRetentionPeriod:
+    Description: 'The number of days to retain the log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, and 3653.'
+    Type: Number
+    Default: 30
+    AllowedValues: [1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827,3653]
   ConfigurationArn:
     Description: AWS MSK kafka configuration arn
-    Type: 'String'  
+    Type: 'String'
   Subnets:
     Description: >-
       List of subnets that need to be used for this cluster creation. It must be equal to the number of broker nodes for cluster creation
@@ -83,17 +88,17 @@ Parameters:
     Description: Indicates whether you want to enable or disable the Node Exporter.
     Type: String
     Default: true
-    AllowedValues: [true, false]   
+    AllowedValues: [true, false]
   InCluster:
     Description: >-
-      When set to true, it indicates that data communication among the broker nodes 
-      of the cluster is encrypted. When set to false, the communication happens in plaintext. 
+      When set to true, it indicates that data communication among the broker nodes
+      of the cluster is encrypted. When set to false, the communication happens in plaintext.
     Type: String
     Default: false
     AllowedValues: [true, false]
   ClientBroker:
     Description: >-
-      Indicates the encryption setting for data in transit between clients and brokers. 
+      Indicates the encryption setting for data in transit between clients and brokers.
       The following are the possible values - TLS, TLS_PLAINTEXT,PLAINTEXT.
     Type: String
     Default: TLS_PLAINTEXT
@@ -106,6 +111,7 @@ Resources:
       - ''
       - - 'Dragonfly-'
         - !Ref ClusterName
+      RetentionInDays: !Ref CloudWatchLogRetentionPeriod
   MSKSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -126,7 +132,7 @@ Resources:
           SourceSecurityGroupId: !Ref KafkaClientInstanceSecurityGroup
   MSKCluster:
     Type: 'AWS::MSK::Cluster'
-    Properties: 
+    Properties:
       ConfigurationInfo:
         Arn: !Ref ConfigurationArn
         Revision: 1
@@ -154,10 +160,11 @@ Resources:
             EnabledInBroker: !Ref JmxExporter
           NodeExporter:
             EnabledInBroker: !Ref NodeExporter
-      CloudWatchLogs:
-        Properties:
-          Enabled: true
-          LogGroup: !Ref MSKLogGroup
+      LoggingInfo:
+        BrokerLogs:
+          CloudWatchLogs:
+            Enabled: 'true'
+            LogGroup: !Ref MSKLogGroup
   GetMskEndpointsFunctionRole:
     Type: "AWS::IAM::Role"
     Properties:
@@ -189,7 +196,7 @@ Resources:
                   - "kafka:Describe*"
                   - "kafka:List*"
                   - "kafka:Get*"
-                Resource: "*"                
+                Resource: "*"
   GetMskEndpointsFunctionLambda:
     Type: AWS::Lambda::Function
     Properties:
@@ -203,7 +210,7 @@ Resources:
         S3Key: functions/msk/mskendpoints.zip
       Runtime: go1.x
       Timeout: '60'
-      Environment: 
+      Environment:
         Variables:
           clusterarn: !Ref MSKCluster
   GetMskEndpointsCustomResource:
@@ -222,10 +229,10 @@ Outputs:
       - GroupId
   ZKEndpoints:
     Description: Zookeeper endpoints for AWS MSK
-    Value: !GetAtt  GetMskEndpointsCustomResource.ZookeeperEndpoints     
+    Value: !GetAtt  GetMskEndpointsCustomResource.ZookeeperEndpoints
   Host:
     Description: AWS MSK Bootstrap server Broker endpoints
     Value: !GetAtt  GetMskEndpointsCustomResource.BootstrapServerEndpoints
   Port:
     Description: Dummy port for downstream consumption. Solely here to preserve host port semantics
-    Value: '9092' 
+    Value: '9092'
