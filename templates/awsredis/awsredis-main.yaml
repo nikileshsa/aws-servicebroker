@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  A Cloudformation template to create Redis cluster using AWS managed ElasticCache. The template creates a redis deployment in cluster mode 
+  A Cloudformation template to create Redis cluster using AWS managed ElasticCache. The template creates a redis deployment in cluster mode
   and references a VPCID and three subnets for multizone deployment.
 Metadata:
   AWS::ServiceBroker::Specification:
@@ -32,16 +32,16 @@ Metadata:
         Description: Cluster for Integration needs
         LongDescription: Creates an Amazon ElastiCache for redis for integration needs
         Cost: https://aws.amazon.com/elasticache/pricing/
-        ParameterValues: 
+        ParameterValues:
           CacheNodeType: cache.t2.micro
           ReplicasPerNodeGroup: 0
           NumNodeGroups: 1
 Parameters:
   RedisParameterGroup:
     Description: Custom Redis parameter group name
-    Type: String    
+    Type: String
   EKSClusterName:
-    Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the key clustername. 
+    Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the key clustername.
     Type: CommaDelimitedList
   CacheNodeType:
     Description: The instance type the nodes will launch under.
@@ -77,7 +77,7 @@ Parameters:
       - cache.r4.8xlarge
       - cache.r4.16xlarge
       - cache.r5.large
-      - cache.r5.xlarge 
+      - cache.r5.xlarge
       - cache.r5.2xlarge
       - cache.r5.4xlarge
       - cache.r5.12xlarge
@@ -96,11 +96,10 @@ Parameters:
     Description: Redis Client Auth Token, if left at default a 32 character
       token will be generated for redis clients to connect to cluster
     Type: String
-    Default: Auto
-    NoEcho: 'True'
+    Default: false
     AllowedValues:
-      - 'True'
-      - 'False'
+      - true
+      - false
   ReplicasPerNodeGroup:
     Description: >-
       The number of cache clusters for this replication group.
@@ -110,7 +109,7 @@ Parameters:
     MaxValue: '5'
   NumNodeGroups:
     Description: >-
-      An optional parameter that specifies the number of node groups (shards) for this Redis (cluster mode enabled) replication group. For Redis (cluster mode disabled) either omit this parameter or set it to 1. 
+      An optional parameter that specifies the number of node groups (shards) for this Redis (cluster mode enabled) replication group. For Redis (cluster mode disabled) either omit this parameter or set it to 1.
       If you set UseOnlineResharding to true, you can update NumNodeGroups without interruption. When UseOnlineResharding is set to false, or is not specified, updating NumNodeGroups results in replacement.
     Default: '2'
     Type: Number
@@ -172,32 +171,32 @@ Parameters:
     Description: >-
       One of the subnets you would like the ReplicationGroup to be created in.
       In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'  
+    Type: 'AWS::EC2::Subnet::Id'
   SubnetC:
     Description: >-
         One of the subnets you would like the ReplicationGroup to be created in.
         In this Dragonfly deployment we only accept 3 subnets for now
-    Type: 'AWS::EC2::Subnet::Id'  
+    Type: 'AWS::EC2::Subnet::Id'
   TransitEncryptionEnabled:
     Type: String
-    Default: 'true'
-  AtRestEncryptionEnabled:  
+    Default: true
+  AtRestEncryptionEnabled:
     Type: String
-    Default: 'true'
+    Default: true
   AllowVersionUpgrade:
     Description: Indicates that minor engine upgrades will be applied automatically
       to the cache cluster during the maintenance window. The default value is true.
     Type: String
-    Default: 'True'
+    Default: true
     AllowedValues:
-    - 'True'
-    - 'False'
+    - true
+    - false
 Conditions:
   EnableAuthToken:
     !Equals
     - !Ref ClientAuthToken
-    - True
-Resources:  
+    - true
+Resources:
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -219,7 +218,7 @@ Resources:
   ReplicationGroup:
     Type: 'AWS::ElastiCache::ReplicationGroup'
     Properties:
-      AutomaticFailoverEnabled: 'true'
+      AutomaticFailoverEnabled: true
       AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
       NotificationTopicArn: !Ref NotificationTopicArn
       CacheNodeType: !Ref CacheNodeType
@@ -232,7 +231,7 @@ Resources:
       PreferredMaintenanceWindow: !Ref PreferredMaintenanceWindow
       ReplicationGroupDescription: !Ref ReplicationGroupDescription
       SecurityGroupIds:
-        - !GetAtt 
+        - !GetAtt
           - SecurityGroup
           - GroupId
       SnapshotRetentionLimit: !Ref SnapshotRetentionLimit
@@ -240,13 +239,13 @@ Resources:
       NumNodeGroups: !Ref NumNodeGroups
       TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
-      AuthToken: 
+      AuthToken:
         !If
         - EnableAuthToken
         - !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
         - !Ref AWS::NoValue
-      Tags:   
-        - 
+      Tags:
+        -
           Key: "mgsvc:clusterName"
           Value: !Select [ 0, !Ref EKSClusterName ]
     UpdatePolicy:
@@ -292,7 +291,7 @@ Resources:
     Type: AWS::CloudFormation::CustomResource
     Properties:
       ServiceToken: !GetAtt AWSSBInjectedClientAuthTokenLambda.Arn
-      Length: 32    
+      Length: 32
 Outputs:
   host:
     Description: 'Redis endpoint'
@@ -305,7 +304,11 @@ Outputs:
     Export:
       Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
   password:
-      Value: !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
+      Value:
+        !If
+        - EnableAuthToken
+        - !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
+        - ''
       Export:
         Name: !Sub '${AWS::StackName}-AuthToken'
   username:
