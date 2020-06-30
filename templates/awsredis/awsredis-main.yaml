@@ -98,6 +98,9 @@ Parameters:
     Type: String
     Default: Auto
     NoEcho: 'True'
+    AllowedValues:
+      - 'True'
+      - 'False'
   ReplicasPerNodeGroup:
     Description: >-
       The number of cache clusters for this replication group.
@@ -190,10 +193,10 @@ Parameters:
     - 'True'
     - 'False'
 Conditions:
-  AutoAuthToken:
+  EnableAuthToken:
     !Equals
     - !Ref ClientAuthToken
-    - Auto
+    - True
 Resources:  
   SecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -239,9 +242,9 @@ Resources:
       AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
       AuthToken: 
         !If
-        - AutoAuthToken
+        - EnableAuthToken
         - !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
-        - !Ref ClientAuthToken
+        - !Ref AWS::NoValue
       Tags:   
         - 
           Key: "mgsvc:clusterName"
