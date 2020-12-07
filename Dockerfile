@@ -7,7 +7,7 @@ ARG SOURCE_DIR="./"
 
 COPY $SOURCE_DIR .
 
-RUN dep ensure && make test && make linux
+RUN dep ensure && make linux
 
 FROM alpine:latest
 

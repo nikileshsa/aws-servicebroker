@@ -38,7 +38,7 @@ func cfpostgrecreds(c map[string]interface{}) map[string]interface{} {
 	p["read_host"] = c["EndpointAddress"]
 	p["read_port"] = c["Port"]
 	p["uri"] = "postgresql://" + c["MasterUsername"].(string) + ":"
-	p["uri"] = p["uri"].(string) + c["MasterPassword"].(string) +"@"
+	p["uri"] = p["uri"].(string) + c["MasterPassword"].(string) + "@"
 	p["uri"] = p["uri"].(string) + c["EndpointAddress"].(string) + ":"
 	p["uri"] = p["uri"].(string) + c["Port"].(string) + "/" + c["DBName"].(string)
 	p["read_uri"] = p["uri"]

@@ -199,8 +199,8 @@ func awsCredentialsGetter(keyid string, secretkey string, profile string, params
 		[]credentials.Provider{
 			&credentials.EnvProvider{},
 			&credentials.SharedCredentialsProvider{},
-			&ec2rolecreds.EC2RoleProvider{Client: client},
 			stscreds.NewWebIdentityRoleProvider(stsClient, os.Getenv("AWS_ROLE_ARN"), os.Getenv("AWS_ROLE_SESSION_NAME"), os.Getenv("AWS_WEB_IDENTITY_TOKEN_FILE")),
+			&ec2rolecreds.EC2RoleProvider{Client: client},
 		})
 }
 
@@ -399,7 +399,7 @@ func paramValue(v interface{}) string {
 }
 
 func leaveOutputsAsIs(service *osb.Service) bool {
-	if (service.Metadata["outputsAsIs"]  == true || service.Metadata["cloudFoundry"] == true ) {
+	if service.Metadata["outputsAsIs"] == true || service.Metadata["cloudFoundry"] == true {
 		return true
 	}
 	return false
@@ -455,7 +455,7 @@ func getCredentials(service *osb.Service, outputs []*cloudformation.Output, ssmS
 		}
 	}
 
-	if (service.Metadata["cloudFoundry"] == true){
+	if service.Metadata["cloudFoundry"] == true {
 		switch service.Name {
 		case "rdsmysql":
 			credentials = cfmysqlcreds(credentials)
