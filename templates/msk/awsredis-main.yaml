@@ -1,0 +1,350 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  A Cloudformation template to create Redis cluster using AWS managed ElasticCache. The template creates a redis deployment in cluster mode
+  and references a VPCID and three subnets for multizone deployment.
+Metadata:
+  AWS::ServiceBroker::Specification:
+    Version: 1.0
+    Tags:
+      - awsredis-betav2
+      - AWS
+      - awsredis
+      - redis
+    Name: awsredis
+    DisplayName: Dragonfly ElasticRedis
+    LongDescription: Dragonfly  ElasticRedis is a web service that leverages AWS ElasticCache to set
+      up, manage, and scale distributed in-memory cache.It provides a high performance, resizeable, and cost-effective in-memory cache,
+      while removing the complexity associated with deploying and managing a distributed
+      cache environment.
+    DocumentationUrl: https://aws.amazon.com/documentation/elasticache/
+    ProviderDisplayName: Amazon Web Services
+    UpdatableParameters: [NotificationTopicArn,CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow, NumNodeGroups]
+    ServicePlans:
+      production:
+        DisplayName: Production
+        Description: Configuration designed for production deployments
+        LongDescription: Creates an Amazon ElastiCache for redis, optimised for
+          production use
+        Cost: https://aws.amazon.com/elasticache/pricing/
+        ParameterValues: {}
+      integration:
+        DisplayName: Integration
+        Description: Cluster for Integration needs
+        LongDescription: Creates an Amazon ElastiCache for redis for integration needs
+        Cost: https://aws.amazon.com/elasticache/pricing/
+        ParameterValues:
+          CacheNodeType: cache.t2.micro
+          ReplicasPerNodeGroup: 0
+          NumNodeGroups: 1
+          MultiAZEnabled: false
+Parameters:
+  S3BucketName:
+    Description: S3 bucket where the lambda functions are stored
+    Type: String
+    Default: dflyawsservicebroker-tesseractinternal
+  EksWorkerSecurityGroupID:
+    Description: >-
+       Security Group id that is associated with the Client
+    Type: AWS::EC2::SecurityGroup::Id
+  RedisParameterGroup:
+    Description: Custom Redis parameter group name
+    Type: String
+  EKSClusterName:
+    Description: Tags to add to the Elastic cache redis cluster. Currently the service instance will provide values for the key clustername.
+    Type: CommaDelimitedList
+  CacheNodeType:
+    Description: The instance type the nodes will launch under.
+    Type: String
+    Default: cache.m4.large
+    AllowedValues:
+      - cache.t2.micro
+      - cache.t2.small
+      - cache.t2.medium
+      - cache.t3.micro
+      - cache.t3.small
+      - cache.t3.medium
+      - cache.m4.large
+      - cache.m4.xlarge
+      - cache.m4.2xlarge
+      - cache.m4.4xlarge
+      - cache.m4.10xlarge
+      - cache.m5.large
+      - cache.m5.xlarge
+      - cache.m5.2xlarge
+      - cache.m5.4xlarge
+      - cache.m5.12xlarge
+      - cache.m5.24xlarge
+      - cache.r3.large
+      - cache.r3.xlarge
+      - cache.r3.2xlarge
+      - cache.r3.4xlarge
+      - cache.r3.8xlarge
+      - cache.r4.large
+      - cache.r4.xlarge
+      - cache.r4.2xlarge
+      - cache.r4.4xlarge
+      - cache.r4.8xlarge
+      - cache.r4.16xlarge
+      - cache.r5.large
+      - cache.r5.xlarge
+      - cache.r5.2xlarge
+      - cache.r5.4xlarge
+      - cache.r5.12xlarge
+      - cache.r5.24xlarge
+      - cache.m6g.large
+      - cache.m6g.xlarge
+      - cache.m6g.2xlarge
+      - cache.m6g.4xlarge
+      - cache.m6g.8xlarge
+      - cache.m6g.12xlarge
+      - cache.m6g.16xlarge
+      - cache.r6g.large
+      - cache.r6g.xlarge
+      - cache.r6g.2xlarge
+      - cache.r6g.4xlarge
+      - cache.r6g.8xlarge
+      - cache.r6g.12xlarge
+      - cache.r6g.16xlarge
+  EngineVersion:
+    Description: Family to be used with cluster or parameter group
+    Type: String
+    AllowedValues:
+    - 5.0.6
+    Default: 5.0.6
+  NotificationTopicArn:
+    Description: The Amazon Resource Name (ARN) of the Amazon Simple Notification Service (SNS) topic to which notifications are sent.
+    Type: String
+    Default: ''
+  ClientAuthToken:
+    Description: Redis Client Auth Token, if left at default a 32 character
+      token will be generated for redis clients to connect to cluster
+    Type: String
+    Default: true
+    AllowedValues:
+      - true
+      - false
+  MultiAZEnabled:
+    Description: A flag indicating if you have Multi-AZ enabled to enhance fault tolerance.
+    Type: String
+    Default: true
+    AllowedValues:
+      - true
+      - false
+  ReplicasPerNodeGroup:
+    Description: >-
+      The number of cache clusters for this replication group.
+    Default: '1'
+    Type: Number
+    MinValue: '0'
+    MaxValue: '5'
+  NumNodeGroups:
+    Description: >-
+      An optional parameter that specifies the number of node groups (shards) for this Redis (cluster mode enabled) replication group. For Redis (cluster mode disabled) either omit this parameter or set it to 1.
+      If you set UseOnlineResharding to true, you can update NumNodeGroups without interruption. When UseOnlineResharding is set to false, or is not specified, updating NumNodeGroups results in replacement.
+    Default: '2'
+    Type: Number
+  RedisPort:
+    Description: >-
+      The port number on which each member of the replication group accepts
+      connections.
+    Type: Number
+    Default: '6379'
+    MinValue: '1'
+    MaxValue: '65535'
+  ReplicationGroupDescription:
+    Description: The description of the replication group.
+    Type: String
+    Default: Dragonfly deployment replication group
+  VpcId:
+    Description: The VPC to create this ReplicationGroup under
+    Type: 'AWS::EC2::VPC::Id'
+  CidrIp:
+    Description: The CIDR you want to access the Replication Group
+    Type: String
+    Default: 0.0.0.0/0
+    AllowedPattern: '(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})/(\d{1,2})'
+    MinLength: '9'
+    MaxLength: '18'
+    ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x
+  SnapshotRetentionLimit:
+    Description: >-
+      The number of days that ElastiCache retains automatic snapshots before
+      deleting them.
+    Type: Number
+    Default: '7'
+  SnapshotWindow:
+    Description: >-
+      The time range (in UTC) when ElastiCache takes a daily snapshot of your
+      node group.
+    Type: String
+    Default: '05:00-09:00'
+    AllowedPattern: '\d{2}:\d{2}-\d{2}:\d{2}'
+    ConstraintDescription: 'must be a valid timestamp range, for example 05:00-09:00'
+  PreferredMaintenanceWindow:
+    Description: >-
+      The weekly time range during which system maintenance can occur. Use the
+      following format to specify a time range: ddd:hh24:mi-ddd:hh24:mi (24H
+      Clock UTC).
+    Type: String
+    Default: 'sun:22:00-sun:23:30'
+    AllowedPattern: >-
+      (mon|tue|wed|thu|fri|sat|sun):\d{2}:\d{2}-(mon|tue|wed|thu|fri|sat|sun):\d{2}:\d{2}
+    ConstraintDescription: >-
+      must be a valid timestamp range with day of week, for example
+      sun:22:00-sun:23:30
+  SubnetA:
+    Description: >-
+      One of the subnets you would like the ReplicationGroup to be created in.
+      In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'
+  SubnetB:
+    Description: >-
+      One of the subnets you would like the ReplicationGroup to be created in.
+      In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'
+  SubnetC:
+    Description: >-
+        One of the subnets you would like the ReplicationGroup to be created in.
+        In this Dragonfly deployment we only accept 3 subnets for now
+    Type: 'AWS::EC2::Subnet::Id'
+  TransitEncryptionEnabled:
+    Type: String
+    Default: true
+  AtRestEncryptionEnabled:
+    Type: String
+    Default: true
+  AllowVersionUpgrade:
+    Description: Indicates that minor engine upgrades will be applied automatically
+      to the cache cluster during the maintenance window. The default value is true.
+    Type: String
+    Default: true
+    AllowedValues:
+    - true
+    - false
+Conditions:
+  EnableAuthToken:
+    !Equals
+    - !Ref ClientAuthToken
+    - true
+Resources:
+  SecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: Security Group for Dragonfly deployment Replication Group
+      SecurityGroupIngress:
+        - SourceSecurityGroupId: !Ref EksWorkerSecurityGroupID
+          FromPort: !Ref RedisPort
+          ToPort: !Ref RedisPort
+          IpProtocol: tcp
+      VpcId: !Ref VpcId
+  SubnetGroup:
+    Type: 'AWS::ElastiCache::SubnetGroup'
+    Properties:
+      Description: Subnet Group for Dragonfly deployment Replication Group
+      SubnetIds:
+        - !Ref SubnetA
+        - !Ref SubnetB
+        - !Ref SubnetC
+  ReplicationGroup:
+    Type: 'AWS::ElastiCache::ReplicationGroup'
+    Properties:
+      AutomaticFailoverEnabled: true
+      MultiAZEnabled: !Ref MultiAZEnabled
+      AutoMinorVersionUpgrade: !Ref AllowVersionUpgrade
+      NotificationTopicArn: !Ref NotificationTopicArn
+      CacheNodeType: !Ref CacheNodeType
+      CacheSubnetGroupName: !Ref SubnetGroup
+      CacheParameterGroupName: !Ref RedisParameterGroup
+      Engine: redis
+      EngineVersion: !Ref EngineVersion
+      ReplicasPerNodeGroup: !Ref ReplicasPerNodeGroup
+      Port: !Ref RedisPort
+      PreferredMaintenanceWindow: !Ref PreferredMaintenanceWindow
+      ReplicationGroupDescription: !Ref ReplicationGroupDescription
+      SecurityGroupIds:
+        - !GetAtt
+          - SecurityGroup
+          - GroupId
+      SnapshotRetentionLimit: !Ref SnapshotRetentionLimit
+      SnapshotWindow: !Ref SnapshotWindow
+      NumNodeGroups: !Ref NumNodeGroups
+      TransitEncryptionEnabled: !Ref TransitEncryptionEnabled
+      AtRestEncryptionEnabled: !Ref AtRestEncryptionEnabled
+      AuthToken:
+        !If
+        - EnableAuthToken
+        - !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
+        - !Ref AWS::NoValue
+      Tags:
+        -
+          Key: "mgsvc:clusterName"
+          Value: !Select [ 0, !Ref EKSClusterName ]
+    UpdatePolicy:
+      UseOnlineResharding: true
+  AWSSBInjectedClientAuthTokenRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - lambda.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      Path: /
+      Policies:
+      - PolicyName: cfn_utility_get_cidrs
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: '*'
+  AWSSBInjectedClientAuthTokenLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: lambda_function.handler
+      Role:
+        Fn::GetAtt:
+        - AWSSBInjectedClientAuthTokenRole
+        - Arn
+      Code:
+        S3Bucket: !Ref S3BucketName
+        S3Key: functions/generate_password/awsredis_gentoken_lambda_func.zip
+      Runtime: python3.6
+      Timeout: '60'
+  AWSSBInjectedClientAuthToken:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt AWSSBInjectedClientAuthTokenLambda.Arn
+      Length: 32
+Outputs:
+  host:
+    Description: 'Redis endpoint'
+    Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Address'
+    Export:
+      Name: !Sub '${AWS::StackName}-ConfigurationEndPointAddress'
+  port:
+    Description: 'Redis port'
+    Value: !GetAtt 'ReplicationGroup.ConfigurationEndPoint.Port'
+    Export:
+      Name: !Sub '${AWS::StackName}-ConfigurationEndPointPort'
+  password:
+      Value:
+        !If
+        - EnableAuthToken
+        - !GetAtt AWSSBInjectedClientAuthToken.ClientAuthToken
+        - 'passworddisabled'
+      Export:
+        Name: !Sub '${AWS::StackName}-AuthToken'
+  username:
+    Description: This is not used for creating the replication group. It is solely present for the dependennt workflows which has only support for username@password semantics
+    Value: 'appuser'
+  provisionedBy:
+    Description: This is not used for creating the replication group. It is solely present for the dependennt workflows for Dragonfly
+    Value: 'aws-broker'
