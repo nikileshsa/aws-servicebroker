@@ -18,7 +18,7 @@ Metadata:
       cache environment.
     DocumentationUrl: https://aws.amazon.com/documentation/elasticache/
     ProviderDisplayName: Amazon Web Services
-    UpdatableParameters: [NotificationTopicArn,CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow, NumNodeGroups]
+    UpdatableParameters: [NotificationTopicArn,CacheNodeType,ReplicasPerNodeGroup,SnapshotRetentionLimit,SnapshotWindow,PreferredMaintenanceWindow, NumNodeGroups,EngineVersion]
     ServicePlans:
       production:
         DisplayName: Production
@@ -109,8 +109,9 @@ Parameters:
     Description: Family to be used with cluster or parameter group
     Type: String
     AllowedValues:
-    - 5.0.6
-    Default: 5.0.6
+    - '5.0.6'
+    - '6.x'
+    Default: '5.0.6'
   NotificationTopicArn:
     Description: The Amazon Resource Name (ARN) of the Amazon Simple Notification Service (SNS) topic to which notifications are sent.
     Type: String
